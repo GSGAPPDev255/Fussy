@@ -142,7 +142,7 @@ function StepProfileStats({ data, onChange }) {
   )
 }
 
-function StepDealbreakers({ data, onChange }) {
+function StepDealbreakers({ data, onChange, errors = {} }) {
   return (
     <div className="space-y-5 animate-slide-up">
       <div className="card border-urgency/20 bg-urgency/5 mb-1">
@@ -161,12 +161,17 @@ function StepDealbreakers({ data, onChange }) {
         min={18}
         max={80}
       />
-      <MultiToggle
-        label="Seeking"
-        options={GENDER_OPTIONS}
-        value={data.seeking_gender ?? []}
-        onChange={(vals) => onChange('seeking_gender', vals)}
-      />
+      <div>
+        <MultiToggle
+          label="Seeking"
+          options={GENDER_OPTIONS}
+          value={data.seeking_gender ?? []}
+          onChange={(vals) => onChange('seeking_gender', vals)}
+        />
+        {errors.seeking_gender && (
+          <p className="mt-1.5 text-xs text-urgency">{errors.seeking_gender}</p>
+        )}
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <p className="section-label">Has kids?</p>
@@ -245,6 +250,7 @@ export default function FussyOnboarding({ onComplete }) {
   const [step, setStep] = useState(1)
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState({})
+  const [saveError, setSaveError] = useState(null)
 
   const [profileData, setProfileData] = useState({
     display_name: '',
@@ -354,10 +360,14 @@ export default function FussyOnboarding({ onComplete }) {
 
     setSaving(false)
 
-    if (!error && data) {
-      setProfile(data)
-      onComplete()
+    if (error) {
+      setSaveError(error.message)
+      return
     }
+
+    // data may be null on first upsert in some Supabase versions — fetch it
+    if (data) setProfile(data)
+    onComplete()
   }
 
   const currentStep = STEPS[step - 1]
@@ -401,7 +411,7 @@ export default function FussyOnboarding({ onComplete }) {
           <StepProfileStats data={profileData} onChange={handleProfileChange} errors={errors} />
         )}
         {step === 2 && (
-          <StepDealbreakers data={dealbreakers} onChange={handleDealbreakerChange} />
+          <StepDealbreakers data={dealbreakers} onChange={handleDealbreakerChange} errors={errors} />
         )}
         {step === 3 && (
           <StepSoftPreferences data={softPrefs} onChange={handleSoftPrefChange} />
@@ -409,9 +419,13 @@ export default function FussyOnboarding({ onComplete }) {
       </div>
 
       {/* Footer nav */}
-      <div className="px-5 pb-8 pt-3 flex gap-3 border-t border-border/50">
+      <div className="px-5 pb-8 pt-3 flex flex-col gap-3 border-t border-border/50">
+        {saveError && (
+          <p className="text-xs text-urgency bg-urgency/10 px-3 py-2 rounded-lg">{saveError}</p>
+        )}
+        <div className="flex gap-3">
         {step > 1 && (
-          <Button variant="ghost" onClick={() => setStep((s) => s - 1)} className="flex-none w-auto px-4">
+          <Button variant="ghost" onClick={() => { setStep((s) => s - 1); setSaveError(null) }} className="flex-none w-auto px-4">
             <ArrowLeft size={16} />
           </Button>
         )}
@@ -424,6 +438,7 @@ export default function FussyOnboarding({ onComplete }) {
             {saving ? 'Saving…' : <><Check size={16} /> Finish — Let&apos;s go</>}
           </Button>
         )}
+        </div>
       </div>
     </div>
   )
