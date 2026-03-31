@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { signInWithEmail, signUpWithEmail } from '../lib/supabaseClient'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
+import useAuthStore from '../store/useAuthStore'
 
 export default function Auth() {
   const navigate = useNavigate()
-  const [mode, setMode] = useState('signin') // 'signin' | 'signup'
+  const { setSession, fetchProfile } = useAuthStore()
+  const [mode, setMode] = useState('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -22,16 +24,26 @@ export default function Auth() {
     const fn = mode === 'signup' ? signUpWithEmail : signInWithEmail
     const { error: authError, data } = await fn(email, password)
 
-    setLoading(false)
-
     if (authError) {
+      setLoading(false)
       setError(authError.message)
-    } else if (mode === 'signup' && data?.user && !data?.session) {
-      setMessage('Check your email to confirm your account.')
-    } else {
-      // Sign-in succeeded — navigate explicitly instead of relying on reactive store
-      navigate('/', { replace: true })
+      return
     }
+
+    if (mode === 'signup' && data?.user && !data?.session) {
+      setLoading(false)
+      setMessage('Check your email to confirm your account.')
+      return
+    }
+
+    // Immediately sync session into store — don't wait for onAuthStateChange
+    if (data?.session) {
+      setSession(data.session)
+      await fetchProfile(data.session.user.id)
+    }
+
+    setLoading(false)
+    navigate('/', { replace: true })
   }
 
   return (
