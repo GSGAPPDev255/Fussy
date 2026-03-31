@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { signInWithEmail, signUpWithEmail } from '../lib/supabaseClient'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 
 export default function Auth() {
+  const navigate = useNavigate()
   const [mode, setMode] = useState('signin') // 'signin' | 'signup'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -26,6 +28,9 @@ export default function Auth() {
       setError(authError.message)
     } else if (mode === 'signup' && data?.user && !data?.session) {
       setMessage('Check your email to confirm your account.')
+    } else {
+      // Sign-in succeeded — navigate explicitly instead of relying on reactive store
+      navigate('/', { replace: true })
     }
   }
 

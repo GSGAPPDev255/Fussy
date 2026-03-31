@@ -13,10 +13,15 @@ const useAuthStore = create((set, get) => ({
   },
 
   fetchProfile: async (userId) => {
-    const { data, error } = await getProfile(userId)
-    // data is null for new users (no row yet) — still mark as fetched
-    set({ profile: data ?? null, profileFetched: true })
-    return { data, error }
+    try {
+      const { data, error } = await getProfile(userId)
+      set({ profile: data ?? null, profileFetched: true })
+      return { data, error }
+    } catch (e) {
+      // Never leave profileFetched as false — onboarding gate would spin forever
+      set({ profile: null, profileFetched: true })
+      return { data: null, error: e }
+    }
   },
 
   setProfile: (profile) => set({ profile, profileFetched: true }),
@@ -39,7 +44,7 @@ const useAuthStore = create((set, get) => ({
         get().fetchProfile(session.user.id)
       }
       if (event === 'SIGNED_OUT') {
-        set({ profile: null })
+        set({ profile: null, profileFetched: false })
       }
     })
   },
