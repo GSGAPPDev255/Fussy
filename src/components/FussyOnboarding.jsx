@@ -66,25 +66,27 @@ const STEPS = [
 
 // ─── Step components ─────────────────────────────────────────────────────────
 
-function StepProfileStats({ data, onChange }) {
+function StepProfileStats({ data, onChange, errors = {} }) {
   return (
     <div className="space-y-5 animate-slide-up">
       <Input
-        label="Display Name"
+        label="Display Name *"
         placeholder="How should people know you?"
         value={data.display_name}
         onChange={(e) => onChange('display_name', e.target.value)}
         maxLength={32}
+        error={errors.display_name}
       />
       <div className="grid grid-cols-2 gap-3">
         <Input
-          label="Age"
+          label="Age *"
           type="number"
           placeholder="25"
           min={18}
           max={99}
           value={data.age}
           onChange={(e) => onChange('age', e.target.value)}
+          error={errors.age}
         />
         <Input
           label="Height (cm)"
@@ -96,17 +98,21 @@ function StepProfileStats({ data, onChange }) {
           onChange={(e) => onChange('height_cm', e.target.value)}
         />
       </div>
-      <MultiToggle
-        label="I am a"
-        options={GENDER_OPTIONS}
-        value={data.gender ? [data.gender] : []}
-        onChange={(vals) => onChange('gender', vals[vals.length - 1] ?? '')}
-      />
+      <div>
+        <MultiToggle
+          label="I am a *"
+          options={GENDER_OPTIONS}
+          value={data.gender ? [data.gender] : []}
+          onChange={(vals) => onChange('gender', vals[vals.length - 1] ?? '')}
+        />
+        {errors.gender && <p className="mt-1.5 text-xs text-urgency">{errors.gender}</p>}
+      </div>
       <Input
-        label="City"
+        label="City *"
         placeholder="London"
         value={data.location_city}
         onChange={(e) => onChange('location_city', e.target.value)}
+        error={errors.location_city}
       />
       <div className="grid grid-cols-2 gap-3">
         <div>
@@ -297,8 +303,7 @@ export default function FussyOnboarding({ onComplete }) {
     const errs = {}
     if (!profileData.display_name.trim()) errs.display_name = 'Required'
     if (!profileData.age || Number(profileData.age) < 18) errs.age = 'Must be 18+'
-    if (!profileData.gender) errs.gender = 'Required'
-    if (!profileData.location_city.trim()) errs.location_city = 'Required'
+    if (!profileData.gender) errs.gender = 'Select one'
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -408,7 +413,14 @@ export default function FussyOnboarding({ onComplete }) {
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-5 pb-4">
         {step === 1 && (
-          <StepProfileStats data={profileData} onChange={handleProfileChange} errors={errors} />
+          <>
+            {Object.keys(errors).length > 0 && (
+              <div className="mb-4 px-3 py-2 bg-urgency/10 border border-urgency/30 rounded-lg">
+                <p className="text-xs text-urgency">Please fill in the required fields marked with *</p>
+              </div>
+            )}
+            <StepProfileStats data={profileData} onChange={handleProfileChange} errors={errors} />
+          </>
         )}
         {step === 2 && (
           <StepDealbreakers data={dealbreakers} onChange={handleDealbreakerChange} errors={errors} />
