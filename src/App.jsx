@@ -36,22 +36,23 @@ function RequireAuth({ children }) {
 }
 
 function RequireOnboarding({ children }) {
-  const { profile } = useAuthStore()
+  const { profile, profileFetched } = useAuthStore()
 
-  if (profile && !profile.onboarding_complete) {
-    return (
-      <FussyOnboarding
-        onComplete={() => window.location.href = '/browse'}
-      />
-    )
-  }
-
-  // Profile still loading — show nothing briefly
-  if (profile === null) {
+  // Still waiting for the profile fetch to complete
+  if (!profileFetched) {
     return (
       <div className="min-h-dvh bg-bg flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-urgency/30 border-t-urgency rounded-full animate-spin" />
       </div>
+    )
+  }
+
+  // Fetch done: no row yet (new user) OR onboarding incomplete → show onboarding
+  if (!profile || !profile.onboarding_complete) {
+    return (
+      <FussyOnboarding
+        onComplete={() => window.location.href = '/browse'}
+      />
     )
   }
 

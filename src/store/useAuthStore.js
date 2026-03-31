@@ -5,6 +5,7 @@ const useAuthStore = create((set, get) => ({
   session: null,
   user: null,
   profile: null,
+  profileFetched: false, // true once fetch has completed (data or no row)
   loading: true,
 
   setSession: (session) => {
@@ -13,11 +14,12 @@ const useAuthStore = create((set, get) => ({
 
   fetchProfile: async (userId) => {
     const { data, error } = await getProfile(userId)
-    if (!error && data) set({ profile: data })
+    // data is null for new users (no row yet) — still mark as fetched
+    set({ profile: data ?? null, profileFetched: true })
     return { data, error }
   },
 
-  setProfile: (profile) => set({ profile }),
+  setProfile: (profile) => set({ profile, profileFetched: true }),
 
   clearAuth: () => set({ session: null, user: null, profile: null }),
 

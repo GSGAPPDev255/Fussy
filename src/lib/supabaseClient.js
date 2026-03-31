@@ -35,7 +35,7 @@ export const signOut = () => supabase.auth.signOut()
 // ---------------------------------------------------------------------------
 
 export const getProfile = (userId) =>
-  supabase.from('profiles').select('*').eq('id', userId).single()
+  supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
 
 export const upsertProfile = (profile) =>
   supabase.from('profiles').upsert(profile, { onConflict: 'id' }).select().single()
