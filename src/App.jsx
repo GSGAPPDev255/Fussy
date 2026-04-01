@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import useAuthStore from './store/useAuthStore'
 import Auth from './pages/Auth'
 import Browse from './pages/Browse'
@@ -9,10 +9,27 @@ import Profile from './pages/Profile'
 import FussyOnboarding from './components/FussyOnboarding'
 import BottomNav from './components/BottomNav'
 
+// Scroll the content area back to top whenever the route changes
+function ScrollReset({ scrollRef }) {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0
+  }, [pathname])
+  return null
+}
+
 function ProtectedLayout({ children }) {
+  const scrollRef = useRef(null)
+
   return (
-    <div className="flex flex-col min-h-dvh max-w-md mx-auto" style={{ background: '#080808' }}>
-      <div className="flex-1 flex flex-col overflow-y-auto">
+    <div
+      className="flex flex-col max-w-md mx-auto"
+      style={{ height: '100dvh', background: '#080808' }}
+    >
+      {/* Exact-height container so the content area scrolls internally
+          and the BottomNav is always pinned to the bottom */}
+      <div ref={scrollRef} className="flex-1 flex flex-col overflow-y-auto min-h-0">
+        <ScrollReset scrollRef={scrollRef} />
         {children}
       </div>
       <BottomNav />
@@ -25,8 +42,9 @@ function RequireAuth({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-dvh bg-bg flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-urgency/30 border-t-urgency rounded-full animate-spin" />
+      <div className="flex items-center justify-center" style={{ height: '100dvh', background: '#0D0D0F' }}>
+        <div className="w-8 h-8 border-2 rounded-full animate-spin"
+          style={{ borderColor: 'rgba(255,59,48,0.2)', borderTopColor: '#FF3B30' }} />
       </div>
     )
   }
@@ -38,21 +56,18 @@ function RequireAuth({ children }) {
 function RequireOnboarding({ children }) {
   const { profile, profileFetched } = useAuthStore()
 
-  // Still waiting for the profile fetch to complete
   if (!profileFetched) {
     return (
-      <div className="min-h-dvh bg-bg flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-urgency/30 border-t-urgency rounded-full animate-spin" />
+      <div className="flex items-center justify-center" style={{ height: '100dvh', background: '#0D0D0F' }}>
+        <div className="w-6 h-6 border-2 rounded-full animate-spin"
+          style={{ borderColor: 'rgba(255,59,48,0.2)', borderTopColor: '#FF3B30' }} />
       </div>
     )
   }
 
-  // Fetch done: no row yet (new user) OR onboarding incomplete → show onboarding
   if (!profile || !profile.onboarding_complete) {
     return (
-      <FussyOnboarding
-        onComplete={() => window.location.href = '/browse'}
-      />
+      <FussyOnboarding onComplete={() => { window.location.href = '/browse' }} />
     )
   }
 
@@ -76,12 +91,12 @@ export default function App() {
               <RequireOnboarding>
                 <ProtectedLayout>
                   <Routes>
-                    <Route path="/" element={<Navigate to="/browse" replace />} />
-                    <Route path="/browse" element={<Browse />} />
-                    <Route path="/matches" element={<Matches />} />
+                    <Route path="/"          element={<Navigate to="/browse" replace />} />
+                    <Route path="/browse"    element={<Browse />} />
+                    <Route path="/matches"   element={<Matches />} />
                     <Route path="/match/:id" element={<MatchDetail />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="*" element={<Navigate to="/browse" replace />} />
+                    <Route path="/profile"   element={<Profile />} />
+                    <Route path="*"          element={<Navigate to="/browse" replace />} />
                   </Routes>
                 </ProtectedLayout>
               </RequireOnboarding>
