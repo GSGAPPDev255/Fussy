@@ -29,15 +29,16 @@ export default function MatchDetail() {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-urgency/30 border-t-urgency rounded-full animate-spin" />
+      <div className="flex justify-center py-24">
+        <div className="w-6 h-6 border-2 rounded-full animate-spin"
+          style={{ borderColor: 'rgba(255,59,48,0.2)', borderTopColor: '#FF3B30' }} />
       </div>
     )
   }
 
   if (!match) {
     return (
-      <div className="flex-1 flex items-center justify-center text-subdued text-sm">
+      <div className="py-24 text-center text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>
         Match not found.
       </div>
     )
@@ -51,25 +52,21 @@ export default function MatchDetail() {
   }
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
+    <div>
       {/* Nav bar */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-        <button
-          onClick={() => navigate('/matches')}
-          className="p-1.5 text-subdued hover:text-text transition-colors"
-        >
+      <div className="flex items-center gap-3 px-4 py-3 sticky top-0 z-10"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(8,8,8,0.95)', backdropFilter: 'blur(12px)' }}>
+        <button onClick={() => navigate('/matches')}
+          className="p-1.5 rounded-lg transition-colors"
+          style={{ color: 'rgba(255,255,255,0.4)' }}>
           <ArrowLeft size={18} />
         </button>
-        <span className="font-heading text-base">{other?.display_name}</span>
+        <span className="font-heading text-base text-white">{other?.display_name}</span>
       </div>
 
-      {/* Fuse UI */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        <MatchFuse
-          match={match}
-          onDateSet={() => load()}
-          onExpired={() => load()}
-        />
+      {/* Content */}
+      <div className="px-4 py-4">
+        <MatchFuse match={match} onDateSet={() => load()} onExpired={() => load()} />
       </div>
     </div>
   )
