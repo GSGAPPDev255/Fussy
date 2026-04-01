@@ -122,14 +122,6 @@ export const uploadAvatar = async (userId, file) => {
 export const getAvatarUrl = (path) =>
   supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl
 
-/**
- * Call the verify-photo Edge Function.
- * Returns { valid: boolean, reason: string }
- */
-export const verifyPhoto = (storagePath) =>
-  supabase.functions.invoke('verify-photo', {
-    body: { storage_path: storagePath },
-  })
 
 // ---------------------------------------------------------------------------
 // Realtime subscriptions

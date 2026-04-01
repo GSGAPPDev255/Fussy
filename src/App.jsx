@@ -9,7 +9,6 @@ import Profile from './pages/Profile'
 import FussyOnboarding from './components/FussyOnboarding'
 import BottomNav from './components/BottomNav'
 
-// Scroll the content area back to top whenever the route changes
 function ScrollReset({ scrollRef }) {
   const { pathname } = useLocation()
   useEffect(() => {
@@ -26,11 +25,14 @@ function ProtectedLayout({ children }) {
       className="flex flex-col max-w-md mx-auto"
       style={{ height: '100dvh', background: '#080808' }}
     >
-      {/* Exact-height container so the content area scrolls internally
-          and the BottomNav is always pinned to the bottom */}
-      <div ref={scrollRef} className="flex-1 flex flex-col overflow-y-auto min-h-0">
-        <ScrollReset scrollRef={scrollRef} />
-        {children}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto min-h-0">
+        {/* This inner div stretches to at least full scroll-container height so
+            flex-1 children (like empty-state centred content) always fill the
+            visible area regardless of where the nested <Routes> renders them */}
+        <div className="flex flex-col min-h-full">
+          <ScrollReset scrollRef={scrollRef} />
+          {children}
+        </div>
       </div>
       <BottomNav />
     </div>
@@ -66,9 +68,7 @@ function RequireOnboarding({ children }) {
   }
 
   if (!profile || !profile.onboarding_complete) {
-    return (
-      <FussyOnboarding onComplete={() => { window.location.href = '/browse' }} />
-    )
+    return <FussyOnboarding onComplete={() => { window.location.href = '/browse' }} />
   }
 
   return children
