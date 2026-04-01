@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { getActiveMatches, subscribeToUserMatches } from '../lib/supabaseClient'
+import { supabase, getActiveMatches, subscribeToUserMatches } from '../lib/supabaseClient'
 import useAuthStore from '../store/useAuthStore'
 
 export function useMatches() {
@@ -24,8 +24,8 @@ export function useMatches() {
   useEffect(() => {
     if (!user) return
     const channel = subscribeToUserMatches(user.id, () => load())
-    return () => channel.unsubscribe()
-  }, [user, load])
+    return () => supabase.removeChannel(channel)
+  }, [user?.id])
 
   return { matches, loading, error, reload: load }
 }

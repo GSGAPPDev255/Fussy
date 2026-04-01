@@ -126,21 +126,26 @@ export const getAvatarUrl = (path) =>
 // ---------------------------------------------------------------------------
 // Realtime subscriptions
 // ---------------------------------------------------------------------------
+// Uses a timestamp suffix on channel names so re-renders never try to reuse
+// an already-subscribed channel. Callers must call supabase.removeChannel(ch)
+// in their cleanup (not just ch.unsubscribe()) to fully release the socket slot.
 
-export const subscribeToMatch = (matchId, callback) =>
-  supabase
-    .channel(`match:${matchId}`)
+export const subscribeToMatch = (matchId, callback) => {
+  const channel = supabase
+    .channel(`match:${matchId}:${Date.now()}`)
     .on('postgres_changes', {
       event: '*',
       schema: 'public',
       table: 'matches',
       filter: `id=eq.${matchId}`,
     }, callback)
-    .subscribe()
+  channel.subscribe()
+  return channel
+}
 
-export const subscribeToUserMatches = (userId, callback) =>
-  supabase
-    .channel(`user_matches:${userId}`)
+export const subscribeToUserMatches = (userId, callback) => {
+  const channel = supabase
+    .channel(`user_matches:${userId}:${Date.now()}`)
     .on('postgres_changes', {
       event: '*',
       schema: 'public',
@@ -153,4 +158,6 @@ export const subscribeToUserMatches = (userId, callback) =>
       table: 'matches',
       filter: `user_2=eq.${userId}`,
     }, callback)
-    .subscribe()
+  channel.subscribe()
+  return channel
+}

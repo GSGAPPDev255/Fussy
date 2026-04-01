@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { getMatch, subscribeToMatch } from '../lib/supabaseClient'
+import { supabase, getMatch, subscribeToMatch } from '../lib/supabaseClient'
 import MatchFuse from '../components/MatchFuse'
 import TerminatedScreen from '../components/TerminatedScreen'
 import useAuthStore from '../store/useAuthStore'
@@ -24,7 +24,7 @@ export default function MatchDetail() {
     const channel = subscribeToMatch(id, ({ new: updated }) => {
       setMatch((prev) => prev ? { ...prev, ...updated } : updated)
     })
-    return () => channel.unsubscribe()
+    return () => supabase.removeChannel(channel)
   }, [id])
 
   if (loading) {
