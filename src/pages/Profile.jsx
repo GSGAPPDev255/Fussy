@@ -150,12 +150,12 @@ export default function Profile() {
   // ── Edit mode UI ──────────────────────────────────────────────────────────
   if (editing) {
     return (
-      <div className="flex flex-col flex-1 px-4 pt-4 pb-10">
+      <div className="flex flex-col flex-1 px-4 pt-4 pb-10" style={{ background: '#FEF6F0' }}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="font-heading text-xl text-white">Edit Profile</h1>
+          <h1 className="font-heading text-xl" style={{ color: '#1C1018' }}>Edit Profile</h1>
           <button onClick={() => setEditing(false)} className="p-2 rounded-xl transition-colors"
-            style={{ color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            style={{ color: '#9B8890', background: '#FFFFFF', border: '1.5px solid #F0E4DC' }}>
             <X size={16} />
           </button>
         </div>
@@ -180,13 +180,13 @@ export default function Profile() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="section-label">Have kids?</p>
+              <p className="section-label" style={{ color: '#C4ADB5' }}>Have kids?</p>
               <MultiToggle options={[{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }]}
                 value={[String(editData.has_kids)]}
                 onChange={(vals) => set('has_kids', vals[vals.length - 1] === 'true')} />
             </div>
             <div>
-              <p className="section-label">Want kids?</p>
+              <p className="section-label" style={{ color: '#C4ADB5' }}>Want kids?</p>
               <MultiToggle options={[{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }]}
                 value={[String(editData.wants_kids)]}
                 onChange={(vals) => set('wants_kids', vals[vals.length - 1] === 'true')} />
@@ -203,7 +203,7 @@ export default function Profile() {
 
           {/* Dealbreakers section */}
           <div className="pt-2">
-            <p className="section-label mb-3" style={{ color: 'rgba(255,59,48,0.6)' }}>Dealbreakers</p>
+            <p className="section-label mb-3" style={{ color: 'rgba(232,51,106,0.6)' }}>Dealbreakers</p>
             <div className="space-y-4">
               <RangeRow label="Age range" minName="age_min" maxName="age_max"
                 minVal={editData.age_min} maxVal={editData.age_max}
@@ -218,7 +218,7 @@ export default function Profile() {
 
           {/* Interests */}
           <div className="pt-2">
-            <p className="section-label mb-3">Interests</p>
+            <p className="section-label mb-3" style={{ color: '#C4ADB5' }}>Interests</p>
             <MultiToggle options={INTERESTS_OPTIONS}
               value={editData.interests ?? []}
               onChange={(vals) => set('interests', vals.slice(0, 6))} />
@@ -226,15 +226,15 @@ export default function Profile() {
 
           {saveErr && (
             <div className="px-3 py-2.5 rounded-xl flex items-center gap-2"
-              style={{ background: 'rgba(255,59,48,0.08)', border: '1px solid rgba(255,59,48,0.25)' }}>
-              <AlertCircle size={14} style={{ color: '#FF3B30', flexShrink: 0 }} />
-              <span className="text-xs" style={{ color: '#FF6B63' }}>{saveErr}</span>
+              style={{ background: 'rgba(232,51,106,0.08)', border: '1px solid rgba(232,51,106,0.25)' }}>
+              <AlertCircle size={14} style={{ color: '#E8336A', flexShrink: 0 }} />
+              <span className="text-xs" style={{ color: '#E8336A' }}>{saveErr}</span>
             </div>
           )}
 
           <button onClick={saveEdit} disabled={saving}
             className="w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-heading text-sm tracking-widest uppercase transition-all duration-150 active:scale-[0.97] disabled:opacity-40"
-            style={{ background: '#FF3B30', color: 'white', boxShadow: '0 8px 20px rgba(255,59,48,0.25)' }}>
+            style={{ background: 'linear-gradient(135deg, #E8336A, #FF6B6B)', color: 'white', boxShadow: '0 8px 20px rgba(232,51,106,0.25)' }}>
             {saving ? <><Loader size={15} className="animate-spin" /> Saving…</> : <><Check size={15} /> Save Changes</>}
           </button>
 
@@ -257,13 +257,13 @@ export default function Profile() {
   ].filter((r) => r.value != null)
 
   return (
-    <div className="flex flex-col flex-1 px-4 pt-4 pb-10">
+    <div className="flex flex-col flex-1 px-4 pt-4 pb-10" style={{ background: '#FEF6F0' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="font-heading text-xl text-white">Profile</h1>
+        <h1 className="font-heading text-xl" style={{ color: '#1C1018' }}>Profile</h1>
         <button onClick={openEdit}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm transition-all duration-150 active:scale-[0.97]"
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)' }}>
+          style={{ background: '#FFFFFF', border: '1.5px solid #F0E4DC', color: '#9B8890' }}>
           <Pencil size={13} /> Edit
         </button>
       </div>
@@ -272,14 +272,14 @@ export default function Profile() {
       <div className="flex items-center gap-4 mb-7">
         <div className="relative flex-none">
           <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center"
-            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            style={{ background: 'linear-gradient(135deg, #FFF0F5, #FEF6F0)', border: '1.5px solid #F0E4DC' }}>
             {avatarUrl
               ? <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-              : <span className="font-heading text-xl" style={{ color: 'rgba(255,255,255,0.25)' }}>{initial}</span>}
+              : <span className="font-heading text-xl" style={{ color: '#D4A8B5' }}>{initial}</span>}
           </div>
           <button onClick={() => fileRef.current?.click()} disabled={uploadState === UPLOAD_LOADING}
             className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90"
-            style={{ background: '#FF3B30', border: '2px solid #0D0D0F', boxShadow: '0 2px 8px rgba(255,59,48,0.4)' }}>
+            style={{ background: '#E8336A', border: '2px solid #FEF6F0', boxShadow: '0 2px 8px rgba(232,51,106,0.4)' }}>
             {uploadState === UPLOAD_LOADING
               ? <Loader size={11} className="text-white animate-spin" />
               : <Camera size={11} className="text-white" />}
@@ -287,8 +287,8 @@ export default function Profile() {
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
         </div>
         <div className="min-w-0">
-          <p className="font-heading text-lg text-white truncate">{profile?.display_name ?? '—'}</p>
-          <p className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.3)' }}>{user?.email}</p>
+          <p className="font-heading text-lg truncate" style={{ color: '#1C1018' }}>{profile?.display_name ?? '—'}</p>
+          <p className="text-xs truncate" style={{ color: '#C4ADB5' }}>{user?.email}</p>
         </div>
       </div>
 
@@ -296,15 +296,15 @@ export default function Profile() {
       {uploadState !== UPLOAD_IDLE && (
         <div className="mb-4 px-3 py-2.5 rounded-xl flex items-center gap-2 animate-fade-in"
           style={uploadState === UPLOAD_OK
-            ? { background: 'rgba(52,199,89,0.08)',   border: '1px solid rgba(52,199,89,0.25)' }
+            ? { background: 'rgba(0,179,122,0.08)',   border: '1px solid rgba(0,179,122,0.25)' }
             : uploadState === UPLOAD_FAIL
-            ? { background: 'rgba(255,59,48,0.08)',   border: '1px solid rgba(255,59,48,0.25)' }
-            : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          {uploadState === UPLOAD_OK      && <CheckCircle size={14} style={{ color: '#34C759', flexShrink: 0 }} />}
-          {uploadState === UPLOAD_FAIL    && <AlertCircle size={14} style={{ color: '#FF3B30', flexShrink: 0 }} />}
-          {uploadState === UPLOAD_LOADING && <Loader size={14} className="animate-spin" style={{ color: 'rgba(255,255,255,0.4)', flexShrink: 0 }} />}
+            ? { background: 'rgba(232,51,106,0.08)',  border: '1px solid rgba(232,51,106,0.25)' }
+            : { background: '#FFFFFF', border: '1.5px solid #F0E4DC' }}>
+          {uploadState === UPLOAD_OK      && <CheckCircle size={14} style={{ color: '#00B37A', flexShrink: 0 }} />}
+          {uploadState === UPLOAD_FAIL    && <AlertCircle size={14} style={{ color: '#E8336A', flexShrink: 0 }} />}
+          {uploadState === UPLOAD_LOADING && <Loader size={14} className="animate-spin" style={{ color: '#9B8890', flexShrink: 0 }} />}
           <span className="text-xs"
-            style={{ color: uploadState === UPLOAD_OK ? '#34C759' : uploadState === UPLOAD_FAIL ? '#FF6B63' : 'rgba(255,255,255,0.45)' }}>
+            style={{ color: uploadState === UPLOAD_OK ? '#00B37A' : uploadState === UPLOAD_FAIL ? '#E8336A' : '#9B8890' }}>
             {uploadMsg}
           </span>
         </div>
@@ -312,8 +312,8 @@ export default function Profile() {
 
       {!avatarUrl && uploadState === UPLOAD_IDLE && (
         <div className="mb-4 px-3 py-2.5 rounded-xl"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          style={{ background: '#FFFFFF', border: '1.5px solid #F0E4DC' }}>
+          <p className="text-xs" style={{ color: '#C4ADB5' }}>
             Tap the camera icon to add a profile photo.
           </p>
         </div>
@@ -321,13 +321,13 @@ export default function Profile() {
 
       {/* Stats */}
       {statRows.length > 0 && (
-        <div className="card mb-4">
-          <p className="section-label">My Stats</p>
+        <div className="card mb-4" style={{ background: '#FFFFFF', border: '1.5px solid #F0E4DC' }}>
+          <p className="section-label" style={{ color: '#C4ADB5' }}>My Stats</p>
           <div className="space-y-2.5 mt-2">
             {statRows.map((r) => (
               <div key={r.label} className="flex justify-between text-sm">
-                <span style={{ color: 'rgba(255,255,255,0.35)' }}>{r.label}</span>
-                <span className="text-white capitalize">{String(r.value)}</span>
+                <span style={{ color: '#9B8890' }}>{r.label}</span>
+                <span className="capitalize" style={{ color: '#1C1018' }}>{String(r.value)}</span>
               </div>
             ))}
           </div>
@@ -336,16 +336,16 @@ export default function Profile() {
 
       {/* Dealbreakers */}
       {filters.seeking_gender?.length > 0 && (
-        <div className="card mb-4">
-          <p className="section-label">Dealbreakers</p>
+        <div className="card mb-4" style={{ background: '#FFFFFF', border: '1.5px solid #F0E4DC' }}>
+          <p className="section-label" style={{ color: '#C4ADB5' }}>Dealbreakers</p>
           <div className="space-y-2.5 mt-2 text-sm">
             <div className="flex justify-between">
-              <span style={{ color: 'rgba(255,255,255,0.35)' }}>Age range</span>
-              <span className="font-mono text-white">{filters.age_min}–{filters.age_max}</span>
+              <span style={{ color: '#9B8890' }}>Age range</span>
+              <span className="font-mono" style={{ color: '#1C1018' }}>{filters.age_min}–{filters.age_max}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'rgba(255,255,255,0.35)' }}>Seeking</span>
-              <span className="text-white capitalize">{filters.seeking_gender?.join(', ')}</span>
+              <span style={{ color: '#9B8890' }}>Seeking</span>
+              <span className="capitalize" style={{ color: '#1C1018' }}>{filters.seeking_gender?.join(', ')}</span>
             </div>
           </div>
         </div>
@@ -353,8 +353,8 @@ export default function Profile() {
 
       {/* Interests */}
       {prefs.interests?.length > 0 && (
-        <div className="card mb-6">
-          <p className="section-label">Interests</p>
+        <div className="card mb-6" style={{ background: '#FFFFFF', border: '1.5px solid #F0E4DC' }}>
+          <p className="section-label" style={{ color: '#C4ADB5' }}>Interests</p>
           <div className="flex flex-wrap gap-1.5 mt-2">
             {prefs.interests.map((i) => <span key={i} className="tag capitalize">{i}</span>)}
           </div>
@@ -364,7 +364,7 @@ export default function Profile() {
       <div className="mt-auto pt-2">
         <button onClick={signOut}
           className="w-full py-3.5 px-5 rounded-xl flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.98]"
-          style={{ border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)', color: 'rgba(255,255,255,0.4)' }}>
+          style={{ background: '#FFFFFF', border: '1.5px solid #F0E4DC', color: '#9B8890' }}>
           <LogOut size={15} /> Sign Out
         </button>
       </div>

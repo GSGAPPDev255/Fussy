@@ -20,7 +20,7 @@ function ScrollReset({ scrollRef }) {
 function ProtectedLayout({ children }) {
   const scrollRef = useRef(null)
   return (
-    <div className="max-w-md mx-auto" style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: '#080808' }}>
+    <div className="max-w-md mx-auto" style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: '#FEF6F0' }}>
       <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
         <ScrollReset scrollRef={scrollRef} />
         {children}
@@ -34,9 +34,9 @@ function RequireAuth({ children }) {
   const { session, loading } = useAuthStore()
   if (loading) {
     return (
-      <div style={{ height: '100dvh', background: '#0D0D0F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ height: '100dvh', background: '#FEF6F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="w-8 h-8 border-2 rounded-full animate-spin"
-          style={{ borderColor: 'rgba(255,59,48,0.2)', borderTopColor: '#FF3B30' }} />
+          style={{ borderColor: 'rgba(232,51,106,0.2)', borderTopColor: '#E8336A' }} />
       </div>
     )
   }
@@ -48,9 +48,9 @@ function RequireOnboarding({ children }) {
   const { profile, profileFetched } = useAuthStore()
   if (!profileFetched) {
     return (
-      <div style={{ height: '100dvh', background: '#0D0D0F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ height: '100dvh', background: '#FEF6F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="w-6 h-6 border-2 rounded-full animate-spin"
-          style={{ borderColor: 'rgba(255,59,48,0.2)', borderTopColor: '#FF3B30' }} />
+          style={{ borderColor: 'rgba(232,51,106,0.2)', borderTopColor: '#E8336A' }} />
       </div>
     )
   }

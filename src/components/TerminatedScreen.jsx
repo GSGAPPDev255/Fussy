@@ -1,82 +1,55 @@
 import { useNavigate } from 'react-router-dom'
-import { RotateCcw } from 'lucide-react'
+import { RotateCcw, HeartCrack } from 'lucide-react'
 
-export default function TerminatedScreen({ matchId, otherName }) {
+export default function TerminatedScreen({ otherName }) {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center px-6 relative overflow-hidden animate-fade-in"
-      style={{ background: '#080808' }}>
+    <div className="min-h-dvh flex flex-col items-center justify-center px-6 animate-fade-in"
+      style={{ background: 'linear-gradient(160deg, #FFF0F5 0%, #FEF6F0 60%, #FFF0E8 100%)' }}>
 
-      {/* Background bleed */}
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at 50% 40%, rgba(255,59,48,0.05) 0%, transparent 65%)' }} />
+      <div className="w-full max-w-xs text-center">
 
-      {/* Top line */}
-      <div className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(255,59,48,0.3), transparent)' }} />
-
-      <div className="relative z-10 w-full max-w-xs text-center">
-
-        {/* Icon ring */}
-        <div className="flex items-center justify-center mb-10">
-          <div className="relative">
-            <div className="w-20 h-20 rounded-full flex items-center justify-center"
-              style={{ border: '1px solid rgba(255,59,48,0.2)', background: 'rgba(255,59,48,0.04)' }}>
-              <div className="w-12 h-12 rounded-full flex items-center justify-center"
-                style={{ border: '1px solid rgba(255,59,48,0.35)', background: 'rgba(255,59,48,0.08)' }}>
-                <div className="w-2 h-2 rounded-full" style={{ background: '#FF3B30',
-                  boxShadow: '0 0 8px rgba(255,59,48,0.8), 0 0 20px rgba(255,59,48,0.4)' }} />
-              </div>
-            </div>
-            {/* Ping ring */}
-            <div className="absolute inset-0 rounded-full animate-ping"
-              style={{ border: '1px solid rgba(255,59,48,0.1)', animationDuration: '2s' }} />
+        {/* Icon */}
+        <div className="flex items-center justify-center mb-8">
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center"
+            style={{ background: 'rgba(232,51,106,0.08)', border: '1.5px solid rgba(232,51,106,0.2)', boxShadow: '0 8px 24px rgba(232,51,106,0.15)' }}>
+            <HeartCrack size={32} style={{ color: '#E8336A' }} />
           </div>
         </div>
 
-        {/* Headline */}
-        <p className="font-mono text-[10px] uppercase tracking-[0.25em] mb-3"
-          style={{ color: 'rgba(255,59,48,0.5)' }}>Connection Terminated</p>
-        <h1 className="font-heading text-5xl text-white leading-none mb-2">
-          FUSE<br />
-          <span style={{ color: '#FF3B30', textShadow: '0 0 30px rgba(255,59,48,0.4)' }}>BURNT.</span>
+        <p className="font-mono text-[10px] uppercase tracking-[0.2em] mb-2" style={{ color: '#C4ADB5' }}>
+          Connection Ended
+        </p>
+        <h1 className="font-heading text-4xl mb-3" style={{ color: '#1C1018' }}>
+          Fuse Burnt.
         </h1>
 
         {otherName && (
-          <p className="text-sm mt-4 mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Your match with <span style={{ color: 'rgba(255,255,255,0.7)' }}>{otherName}</span> expired.
+          <p className="text-sm mb-2" style={{ color: '#9B8890' }}>
+            Your match with <span className="font-medium" style={{ color: '#1C1018' }}>{otherName}</span> has expired.
           </p>
         )}
 
-        <p className="font-mono text-xs mb-10"
-          style={{ color: 'rgba(255,59,48,0.45)', letterSpacing: '0.1em' }}>
+        <p className="font-mono text-xs mb-8" style={{ color: '#C4ADB5', letterSpacing: '0.08em' }}>
           72 HOURS · NO REPLAY · NO EXCEPTIONS
         </p>
 
-        {/* Philosophy */}
-        <div className="mb-10 rounded-2xl p-5 text-left"
-          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+        {/* Info card */}
+        <div className="rounded-2xl p-4 mb-8 text-left"
+          style={{ background: '#FFFFFF', border: '1.5px solid #F0E4DC', boxShadow: '0 2px 12px rgba(28,16,24,0.06)' }}>
           <p className="section-label mb-2">Why Fussy does this</p>
-          <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Zombie matches waste your time. The 72-hour fuse keeps intent real.
-            If the connection mattered, a date would have been set.
+          <p className="text-xs leading-relaxed" style={{ color: '#9B8890' }}>
+            Zombie matches waste your time. The 72-hour fuse keeps intent real — if the connection mattered, a date would have been set.
           </p>
         </div>
 
-        {/* Actions */}
         <div className="space-y-3">
-          <button
-            onClick={() => navigate('/browse')}
-            className="btn-primary flex items-center justify-between w-full group"
-          >
+          <button onClick={() => navigate('/browse')} className="btn-primary flex items-center justify-between w-full group">
             <span>Back to Browse</span>
             <RotateCcw size={14} className="transition-transform duration-300 group-hover:-rotate-180" />
           </button>
-          <button
-            onClick={() => navigate('/matches')}
-            className="btn-ghost w-full"
-          >
+          <button onClick={() => navigate('/matches')} className="btn-ghost w-full">
             View Active Matches
           </button>
         </div>

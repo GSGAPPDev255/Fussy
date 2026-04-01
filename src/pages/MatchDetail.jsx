@@ -10,7 +10,7 @@ export default function MatchDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
-  const [match, setMatch] = useState(null)
+  const [match, setMatch]   = useState(null)
   const [loading, setLoading] = useState(true)
 
   const load = async () => {
@@ -31,21 +31,19 @@ export default function MatchDetail() {
     return (
       <div className="flex justify-center py-24">
         <div className="w-6 h-6 border-2 rounded-full animate-spin"
-          style={{ borderColor: 'rgba(255,59,48,0.2)', borderTopColor: '#FF3B30' }} />
+          style={{ borderColor: 'rgba(232,51,106,0.2)', borderTopColor: '#E8336A' }} />
       </div>
     )
   }
 
   if (!match) {
     return (
-      <div className="py-24 text-center text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>
-        Match not found.
-      </div>
+      <div className="py-24 text-center text-sm" style={{ color: '#9B8890' }}>Match not found.</div>
     )
   }
 
   const isUser1 = match.user_1 === user?.id
-  const other = isUser1 ? match.profile_2 : match.profile_1
+  const other   = isUser1 ? match.profile_2 : match.profile_1
 
   if (match.status === 'expired') {
     return <TerminatedScreen matchId={id} otherName={other?.display_name} />
@@ -53,18 +51,25 @@ export default function MatchDetail() {
 
   return (
     <div>
-      {/* Nav bar */}
+      {/* Nav */}
       <div className="flex items-center gap-3 px-4 py-3 sticky top-0 z-10"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(8,8,8,0.95)', backdropFilter: 'blur(12px)' }}>
+        style={{ borderBottom: '1.5px solid #F0E4DC', background: 'rgba(254,246,240,0.95)', backdropFilter: 'blur(12px)' }}>
         <button onClick={() => navigate('/matches')}
-          className="p-1.5 rounded-lg transition-colors"
-          style={{ color: 'rgba(255,255,255,0.4)' }}>
-          <ArrowLeft size={18} />
+          className="p-2 rounded-xl transition-colors"
+          style={{ color: '#9B8890', background: '#FFFFFF', border: '1.5px solid #F0E4DC' }}>
+          <ArrowLeft size={16} />
         </button>
-        <span className="font-heading text-base text-white">{other?.display_name}</span>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, #FFF0F5, #FEF6F0)', border: '1.5px solid #F0E4DC' }}>
+            {other?.avatar_url
+              ? <img src={other.avatar_url} alt="" className="w-full h-full object-cover" />
+              : <span className="font-heading text-sm" style={{ color: '#D4A8B5' }}>{other?.display_name?.[0]?.toUpperCase()}</span>}
+          </div>
+          <span className="font-heading text-base" style={{ color: '#1C1018' }}>{other?.display_name}</span>
+        </div>
       </div>
 
-      {/* Content */}
       <div className="px-4 py-4">
         <MatchFuse match={match} onDateSet={() => load()} onExpired={() => load()} />
       </div>

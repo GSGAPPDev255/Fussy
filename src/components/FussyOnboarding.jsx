@@ -105,7 +105,7 @@ function StepProfileStats({ data, onChange, errors = {} }) {
           value={data.gender ? [data.gender] : []}
           onChange={(vals) => onChange('gender', vals[vals.length - 1] ?? '')}
         />
-        {errors.gender && <p className="mt-1.5 text-xs text-urgency">{errors.gender}</p>}
+        {errors.gender && <p className="mt-1.5 text-xs" style={{ color: '#E8336A' }}>{errors.gender}</p>}
       </div>
       <Input
         label="City *"
@@ -116,7 +116,7 @@ function StepProfileStats({ data, onChange, errors = {} }) {
       />
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <p className="section-label">Have kids?</p>
+          <p className="section-label" style={{ color: '#C4ADB5' }}>Have kids?</p>
           <MultiToggle
             options={[{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }]}
             value={[String(data.has_kids)]}
@@ -124,7 +124,7 @@ function StepProfileStats({ data, onChange, errors = {} }) {
           />
         </div>
         <div>
-          <p className="section-label">Want kids?</p>
+          <p className="section-label" style={{ color: '#C4ADB5' }}>Want kids?</p>
           <MultiToggle
             options={[{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }]}
             value={[String(data.wants_kids)]}
@@ -151,8 +151,9 @@ function StepProfileStats({ data, onChange, errors = {} }) {
 function StepDealbreakers({ data, onChange, errors = {} }) {
   return (
     <div className="space-y-5 animate-slide-up">
-      <div className="card border-urgency/20 bg-urgency/5 mb-1">
-        <p className="text-xs text-urgency/80 leading-relaxed">
+      <div className="card mb-1"
+        style={{ background: 'rgba(232,51,106,0.05)', border: '1px solid rgba(232,51,106,0.2)' }}>
+        <p className="text-xs leading-relaxed" style={{ color: 'rgba(232,51,106,0.8)' }}>
           These are your hard filters. You'll only see people who meet these criteria, and who you also meet theirs.
         </p>
       </div>
@@ -175,12 +176,12 @@ function StepDealbreakers({ data, onChange, errors = {} }) {
           onChange={(vals) => onChange('seeking_gender', vals)}
         />
         {errors.seeking_gender && (
-          <p className="mt-1.5 text-xs text-urgency">{errors.seeking_gender}</p>
+          <p className="mt-1.5 text-xs" style={{ color: '#E8336A' }}>{errors.seeking_gender}</p>
         )}
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <p className="section-label">Has kids?</p>
+          <p className="section-label" style={{ color: '#C4ADB5' }}>Has kids?</p>
           <Select
             value={data.filter_has_kids}
             onChange={(e) => onChange('filter_has_kids', e.target.value)}
@@ -191,7 +192,7 @@ function StepDealbreakers({ data, onChange, errors = {} }) {
           </Select>
         </div>
         <div>
-          <p className="section-label">Wants kids?</p>
+          <p className="section-label" style={{ color: '#C4ADB5' }}>Wants kids?</p>
           <Select
             value={data.filter_wants_kids}
             onChange={(e) => onChange('filter_wants_kids', e.target.value)}
@@ -221,8 +222,9 @@ function StepDealbreakers({ data, onChange, errors = {} }) {
 function StepSoftPreferences({ data, onChange }) {
   return (
     <div className="space-y-5 animate-slide-up">
-      <div className="card border-success/20 bg-success/5 mb-1">
-        <p className="text-xs text-success/80 leading-relaxed">
+      <div className="card mb-1"
+        style={{ background: 'rgba(0,179,122,0.05)', border: '1px solid rgba(0,179,122,0.2)' }}>
+        <p className="text-xs leading-relaxed" style={{ color: 'rgba(0,179,122,0.8)' }}>
           These shape your Fussy Score — the compatibility % shown after you match.
         </p>
       </div>
@@ -378,34 +380,37 @@ export default function FussyOnboarding({ onComplete }) {
   const currentStep = STEPS[step - 1]
 
   return (
-    <div className="min-h-dvh bg-bg flex flex-col">
+    <div className="min-h-dvh flex flex-col" style={{ background: '#FEF6F0' }}>
       {/* Header */}
       <div className="px-5 pt-6 pb-4">
-        <p className="font-heading text-urgency text-xs tracking-widest uppercase mb-4">FUSSY</p>
+        <p className="font-heading text-xs tracking-widest uppercase mb-4" style={{ color: '#E8336A' }}>FUSSY</p>
 
         {/* Progress */}
         <div className="flex gap-1.5 mb-6">
           {STEPS.map((s) => (
             <div
               key={s.id}
-              className={`h-0.5 flex-1 rounded-full transition-all duration-500 ${
-                s.id <= step ? 'bg-urgency' : 'bg-border'
-              }`}
+              className="h-0.5 flex-1 rounded-full transition-all duration-500"
+              style={{ background: s.id <= step ? '#E8336A' : '#F0E4DC' }}
             />
           ))}
         </div>
 
         <div className="flex items-center gap-3">
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-            step > currentStep.id ? 'bg-success/20' : 'bg-urgency/15'
-          }`}>
-            <currentStep.icon size={16} className={step > currentStep.id ? 'text-success' : 'text-urgency'} />
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ background: step > currentStep.id ? 'rgba(0,179,122,0.12)' : 'rgba(232,51,106,0.12)' }}
+          >
+            <currentStep.icon
+              size={16}
+              style={{ color: step > currentStep.id ? '#00B37A' : '#E8336A' }}
+            />
           </div>
           <div>
-            <p className="font-mono text-xs text-subdued uppercase tracking-widest">
+            <p className="font-mono text-xs uppercase tracking-widest" style={{ color: '#9B8890' }}>
               Step {step} of {STEPS.length} — {currentStep.label}
             </p>
-            <h1 className="font-heading text-xl text-text mt-0.5">{currentStep.headline}</h1>
+            <h1 className="font-heading text-xl mt-0.5" style={{ color: '#1C1018' }}>{currentStep.headline}</h1>
           </div>
         </div>
       </div>
@@ -415,8 +420,9 @@ export default function FussyOnboarding({ onComplete }) {
         {step === 1 && (
           <>
             {Object.keys(errors).length > 0 && (
-              <div className="mb-4 px-3 py-2 bg-urgency/10 border border-urgency/30 rounded-lg">
-                <p className="text-xs text-urgency">Please fill in the required fields marked with *</p>
+              <div className="mb-4 px-3 py-2 rounded-lg"
+                style={{ background: 'rgba(232,51,106,0.08)', border: '1px solid rgba(232,51,106,0.25)' }}>
+                <p className="text-xs" style={{ color: '#E8336A' }}>Please fill in the required fields marked with *</p>
               </div>
             )}
             <StepProfileStats data={profileData} onChange={handleProfileChange} errors={errors} />
@@ -431,9 +437,9 @@ export default function FussyOnboarding({ onComplete }) {
       </div>
 
       {/* Footer nav */}
-      <div className="px-5 pb-8 pt-3 flex flex-col gap-3 border-t border-border/50">
+      <div className="px-5 pb-8 pt-3 flex flex-col gap-3" style={{ borderTop: '1.5px solid #F0E4DC' }}>
         {saveError && (
-          <p className="text-xs text-urgency bg-urgency/10 px-3 py-2 rounded-lg">{saveError}</p>
+          <p className="text-xs px-3 py-2 rounded-lg" style={{ color: '#E8336A', background: 'rgba(232,51,106,0.08)' }}>{saveError}</p>
         )}
         <div className="flex gap-3">
         {step > 1 && (

@@ -4,38 +4,38 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: '#0A0A0A',
-        surface: '#141414',
-        border: '#1F1F1F',
-        muted: '#2A2A2A',
-        text: '#F8F9FA',
-        subdued: '#9CA3AF',
-        urgency: '#FF3B30',
-        success: '#34C759',
-        warn: '#FF9F0A',
+        bg:       '#FEF6F0',
+        surface:  '#FFFFFF',
+        border:   '#F0E4DC',
+        muted:    '#F7EDE7',
+        text:     '#1C1018',
+        subdued:  '#9B8890',
+        urgency:  '#E8336A',
+        success:  '#00B37A',
+        warn:     '#F59E0B',
       },
       fontFamily: {
         heading: ['"Archivo Black"', 'sans-serif'],
-        body: ['"DM Sans"', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'monospace'],
+        body:    ['"DM Sans"', 'sans-serif'],
+        mono:    ['"JetBrains Mono"', 'monospace'],
       },
       animation: {
-        'pulse-red': 'pulse-red 1.5s ease-in-out infinite',
-        'fade-in': 'fade-in 0.3s ease-out',
-        'slide-up': 'slide-up 0.4s ease-out',
+        'pulse-rose': 'pulse-rose 1.5s ease-in-out infinite',
+        'fade-in':    'fade-in 0.3s ease-out',
+        'slide-up':   'slide-up 0.4s ease-out',
       },
       keyframes: {
-        'pulse-red': {
+        'pulse-rose': {
           '0%, 100%': { opacity: 1 },
-          '50%': { opacity: 0.4 },
+          '50%':       { opacity: 0.4 },
         },
         'fade-in': {
-          '0%': { opacity: 0 },
+          '0%':   { opacity: 0 },
           '100%': { opacity: 1 },
         },
         'slide-up': {
-          '0%': { transform: 'translateY(16px)', opacity: 0 },
-          '100%': { transform: 'translateY(0)', opacity: 1 },
+          '0%':   { transform: 'translateY(16px)', opacity: 0 },
+          '100%': { transform: 'translateY(0)',    opacity: 1 },
         },
       },
     },

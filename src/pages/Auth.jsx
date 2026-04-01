@@ -1,115 +1,138 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
 import { signInWithEmail, signUpWithEmail } from '../lib/supabaseClient'
 import useAuthStore from '../store/useAuthStore'
+import { Heart, Shield, Zap } from 'lucide-react'
 
 export default function Auth() {
   const navigate = useNavigate()
   const { setSession, fetchProfile } = useAuthStore()
-  const [mode, setMode] = useState('signin')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState(null)
-  const [error, setError] = useState(null)
 
-  const handleSubmit = async (e) => {
+  const [mode, setMode]       = useState('signin')
+  const [email, setEmail]     = useState('')
+  const [password, setPass]   = useState('')
+  const [error, setError]     = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const submit = async (e) => {
     e.preventDefault()
-    setLoading(true)
     setError(null)
-    setMessage(null)
-    const fn = mode === 'signup' ? signUpWithEmail : signInWithEmail
-    const { error: authError, data } = await fn(email, password)
-    if (authError) { setLoading(false); setError(authError.message); return }
-    if (mode === 'signup' && data?.user && !data?.session) {
-      setLoading(false); setMessage('Check your email to confirm your account.'); return
-    }
-    if (data?.session) { setSession(data.session); await fetchProfile(data.session.user.id) }
+    setLoading(true)
+
+    const fn = mode === 'signin' ? signInWithEmail : signUpWithEmail
+    const { data, error: authErr } = await fn(email, password)
     setLoading(false)
+
+    if (authErr) { setError(authErr.message); return }
+
+    if (mode === 'signup') {
+      setError('Check your email to confirm your account, then sign in.')
+      return
+    }
+
+    if (data?.session) {
+      setSession(data.session)
+      await fetchProfile(data.session.user.id)
+    }
     navigate('/', { replace: true })
   }
 
   return (
-    <div className="min-h-dvh flex flex-col" style={{ background: '#0D0D0F' }}>
+    <div className="min-h-dvh flex flex-col" style={{ background: 'linear-gradient(160deg, #FFF0F5 0%, #FEF6F0 50%, #FFF0E8 100%)' }}>
 
-      {/* Hero top section */}
-      <div className="flex-1 flex flex-col justify-end px-6 pb-8 pt-16 max-w-sm mx-auto w-full">
+      {/* Hero */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pt-12 pb-6 text-center">
 
-        {/* Wordmark */}
-        <div className="mb-10">
-          <div className="inline-flex items-center gap-0.5 mb-3">
-            <span className="font-heading text-5xl text-white tracking-tight">FUSSY</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FF3B30] mb-auto mt-2 ml-1" />
+        {/* Logo */}
+        <div className="mb-8">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-4"
+            style={{ background: 'linear-gradient(135deg, #E8336A, #FF6B6B)', boxShadow: '0 8px 32px rgba(232,51,106,0.35)' }}>
+            <Heart size={36} className="text-white" fill="white" />
           </div>
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)', letterSpacing: '0.02em' }}>
-            High-intent dating. No games.
-          </p>
+          <div className="flex items-center justify-center gap-1">
+            <span className="font-heading text-5xl" style={{ color: '#1C1018' }}>FUSSY</span>
+            <span className="w-2 h-2 rounded-full mb-auto mt-2 ml-0.5" style={{ background: '#E8336A' }} />
+          </div>
+          <p className="text-sm mt-2" style={{ color: '#9B8890' }}>Dating with standards.</p>
         </div>
 
-        {/* Feature list */}
-        <div className="mb-10 space-y-2.5">
+        {/* Feature pills */}
+        <div className="flex flex-wrap gap-2 justify-center mb-10">
           {[
-            'Reciprocal matching — you only see who also matches you',
-            '72-hour fuse on every match — book a date or it expires',
-            'Zero zombie conversations',
-          ].map((text, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <div className="w-1.5 h-1.5 rounded-full mt-1.5 flex-none" style={{ background: '#FF3B30' }} />
-              <span className="text-sm leading-snug" style={{ color: 'rgba(255,255,255,0.4)' }}>{text}</span>
+            { icon: Shield, text: 'Reciprocal matching' },
+            { icon: Zap,    text: '72h to book a date' },
+            { icon: Heart,  text: 'Real compatibility' },
+          ].map(({ icon: Icon, text }) => (
+            <div key={text} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium"
+              style={{ background: '#FFFFFF', border: '1.5px solid #F0E4DC', color: '#6B4C58', boxShadow: '0 2px 8px rgba(28,16,24,0.06)' }}>
+              <Icon size={11} style={{ color: '#E8336A' }} />
+              {text}
             </div>
           ))}
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div className="space-y-2.5">
-            <input
-              type="email"
-              className="input-field"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-            <input
-              type="password"
-              className="input-field"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={8}
-              autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-            />
+        {/* Form card */}
+        <div className="w-full max-w-sm">
+          <div className="rounded-3xl p-6" style={{ background: '#FFFFFF', boxShadow: '0 8px 40px rgba(28,16,24,0.1)', border: '1.5px solid #F0E4DC' }}>
+
+            {/* Mode tabs */}
+            <div className="flex rounded-2xl p-1 mb-6" style={{ background: '#FEF6F0' }}>
+              {['signin', 'signup'].map((m) => (
+                <button key={m} onClick={() => { setMode(m); setError(null) }}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+                  style={mode === m ? {
+                    background: '#FFFFFF',
+                    color: '#1C1018',
+                    boxShadow: '0 2px 8px rgba(28,16,24,0.1)',
+                  } : {
+                    color: '#9B8890',
+                    background: 'transparent',
+                  }}>
+                  {m === 'signin' ? 'Sign In' : 'Sign Up'}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={submit} className="space-y-3">
+              <input
+                type="email"
+                className="input-field"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
+              <input
+                type="password"
+                className="input-field"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPass(e.target.value)}
+                required
+                autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+              />
+
+              {error && (
+                <p className="text-xs px-3 py-2.5 rounded-xl leading-relaxed"
+                  style={error.includes('Check your email')
+                    ? { background: 'rgba(0,179,122,0.08)', color: '#00B37A', border: '1px solid rgba(0,179,122,0.2)' }
+                    : { background: 'rgba(232,51,106,0.08)', color: '#E8336A', border: '1px solid rgba(232,51,106,0.2)' }}>
+                  {error}
+                </p>
+              )}
+
+              <button type="submit" disabled={loading} className="btn-primary">
+                {loading ? 'Please wait…' : mode === 'signin' ? 'Sign In' : 'Create Account'}
+              </button>
+            </form>
           </div>
-
-          {error && (
-            <p className="text-xs px-1 animate-fade-in" style={{ color: '#FF6B63' }}>{error}</p>
-          )}
-          {message && (
-            <p className="text-xs px-1 animate-fade-in" style={{ color: '#34C759' }}>{message}</p>
-          )}
-
-          <button type="submit" disabled={loading} className="btn-primary flex items-center justify-between gap-2">
-            <span>{loading ? 'Signing in…' : mode === 'signup' ? 'Create Account' : 'Sign In'}</span>
-            {!loading && <ArrowRight size={16} />}
-            {loading && <div className="w-4 h-4 border-2 rounded-full border-white/20 border-t-white animate-spin" />}
-          </button>
-        </form>
-
-        <button
-          onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(null) }}
-          className="mt-5 text-xs text-center"
-          style={{ color: 'rgba(255,255,255,0.3)' }}
-        >
-          {mode === 'signin'
-            ? <>No account? <span style={{ color: 'rgba(255,255,255,0.6)' }}>Sign up</span></>
-            : <>Have an account? <span style={{ color: 'rgba(255,255,255,0.6)' }}>Sign in</span></>
-          }
-        </button>
+        </div>
       </div>
+
+      <p className="text-center text-xs pb-8 px-6" style={{ color: '#C4ADB5' }}>
+        By continuing you agree to our Terms &amp; Privacy Policy.
+      </p>
     </div>
   )
 }

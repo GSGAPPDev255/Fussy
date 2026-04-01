@@ -6,44 +6,38 @@ import { requestExtension, approveExtension, setDateBooked } from '../lib/supaba
 import useAuthStore from '../store/useAuthStore'
 
 const EXTENSION_REASONS = [
-  { value: 'traveling', label: 'Traveling' },
-  { value: 'work', label: 'Work commitment' },
+  { value: 'traveling', label: 'Travelling' },
+  { value: 'work',      label: 'Work commitment' },
   { value: 'emergency', label: 'Personal emergency' },
 ]
 
 function FuseTimer({ expiresAt }) {
   const { display, hours, isUrgent, isCritical, isExpired } = useCountdown(expiresAt)
-
   const progressPct = isExpired ? 0 : Math.max(0, Math.min(100, (hours / 72) * 100))
-  const color = isCritical ? '#FF3B30' : isUrgent ? '#FF9F0A' : '#F0F0F0'
+
+  const accent = isCritical ? '#E8336A' : isUrgent ? '#F59E0B' : '#E8336A'
+  const bgCard = isCritical ? 'rgba(232,51,106,0.04)' : '#FFFFFF'
+  const border  = isCritical ? 'rgba(232,51,106,0.25)' : '#F0E4DC'
 
   return (
-    <div className="rounded-2xl overflow-hidden relative"
-      style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${isCritical ? 'rgba(255,59,48,0.3)' : 'rgba(255,255,255,0.07)'}`,
-        ...(isCritical && { boxShadow: '0 0 30px rgba(255,59,48,0.1)' }) }}>
+    <div className="rounded-2xl overflow-hidden"
+      style={{ background: bgCard, border: `1.5px solid ${border}`, boxShadow: '0 2px 12px rgba(28,16,24,0.06)' }}>
 
-      {/* Progress bar at top */}
-      <div className="h-0.5 w-full" style={{ background: 'rgba(255,255,255,0.05)' }}>
-        <div className="h-full transition-all duration-1000"
-          style={{ width: `${progressPct}%`,
-            background: isCritical
-              ? 'linear-gradient(90deg, #FF3B30, rgba(255,59,48,0.5))'
-              : isUrgent
-              ? 'linear-gradient(90deg, #FF9F0A, rgba(255,159,10,0.5))'
-              : 'linear-gradient(90deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1))' }} />
+      {/* Progress bar */}
+      <div className="h-1.5 w-full" style={{ background: '#F7EDE7' }}>
+        <div className="h-full rounded-full transition-all duration-1000"
+          style={{ width: `${progressPct}%`, background: `linear-gradient(90deg, ${accent}, ${accent}80)` }} />
       </div>
 
-      <div className="px-5 py-6">
-        <p className="font-mono text-[10px] uppercase tracking-[0.2em] mb-3"
-          style={{ color: 'rgba(255,255,255,0.25)' }}>
+      <div className="px-5 py-5">
+        <p className="font-mono text-[10px] uppercase tracking-[0.18em] mb-2" style={{ color: '#C4ADB5' }}>
           {isExpired ? 'Fuse Burnt' : 'Fuse Burns In'}
         </p>
-        <div className={`font-mono font-semibold tabular-nums leading-none mb-4 ${isCritical ? 'animate-pulse-red' : ''}`}
-          style={{ fontSize: 'clamp(40px,12vw,56px)', color,
-            ...(isCritical && { textShadow: '0 0 30px rgba(255,59,48,0.5)' }) }}>
+        <div className={`font-mono font-bold tabular-nums leading-none mb-3 ${isCritical ? 'animate-pulse-rose' : ''}`}
+          style={{ fontSize: 'clamp(38px,11vw,52px)', color: isCritical ? '#E8336A' : isUrgent ? '#F59E0B' : '#1C1018' }}>
           {isExpired ? '00:00:00' : display}
         </div>
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
+        <p className="text-xs" style={{ color: '#9B8890' }}>
           {isExpired ? 'This match has permanently expired.' : 'Book a date before the timer hits zero.'}
         </p>
       </div>
@@ -52,95 +46,85 @@ function FuseTimer({ expiresAt }) {
 }
 
 function FussyScore({ score }) {
-  const color = score >= 70 ? '#34C759' : score >= 40 ? '#FF9F0A' : '#FF3B30'
-  const label = score >= 70 ? 'High' : score >= 40 ? 'Medium' : 'Low'
+  const color = score >= 70 ? '#00B37A' : score >= 40 ? '#F59E0B' : '#E8336A'
+  const label = score >= 70 ? 'Great match' : score >= 40 ? 'Good match' : 'Some overlap'
+  const bg    = score >= 70 ? 'rgba(0,179,122,0.06)' : score >= 40 ? 'rgba(245,158,11,0.06)' : 'rgba(232,51,106,0.06)'
+  const border = score >= 70 ? 'rgba(0,179,122,0.2)' : score >= 40 ? 'rgba(245,158,11,0.2)' : 'rgba(232,51,106,0.2)'
 
   return (
-    <div className="rounded-2xl p-5"
-      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)' }}>
-      <div className="flex items-center justify-between mb-3">
-        <p className="section-label m-0">Fussy Score</p>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono px-2 py-0.5 rounded-full"
-            style={{ background: `${color}18`, border: `1px solid ${color}30`, color }}>
-            {label}
-          </span>
-          <span className="font-mono font-semibold text-2xl" style={{ color }}>{score}%</span>
+    <div className="rounded-2xl p-4" style={{ background: bg, border: `1.5px solid ${border}` }}>
+      <div className="flex items-center justify-between mb-2.5">
+        <div>
+          <p className="section-label m-0">Fussy Score</p>
+          <p className="text-xs font-medium mt-0.5" style={{ color }}>{label}</p>
         </div>
+        <span className="font-heading text-3xl" style={{ color }}>{score}%</span>
       </div>
-      <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+      <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(28,16,24,0.08)' }}>
         <div className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${score}%`, background: `linear-gradient(90deg, ${color}, ${color}80)` }} />
+          style={{ width: `${score}%`, background: `linear-gradient(90deg, ${color}, ${color}99)` }} />
       </div>
-      <p className="text-xs mt-2.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
-        Soft preference overlap · Hard filters already matched
-      </p>
+      <p className="text-xs mt-2" style={{ color: '#9B8890' }}>Soft preference overlap · hard filters already matched</p>
     </div>
   )
 }
 
 function ExtensionPanel({ match, userId, onUpdated }) {
   const [showForm, setShowForm] = useState(false)
-  const [reason, setReason] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [reason, setReason]     = useState('')
+  const [loading, setLoading]   = useState(false)
 
-  const iRequested = match.extension_requested_by === userId
-  const theyRequested = match.extension_requested_by && match.extension_requested_by !== userId
+  const iRequested      = match.extension_requested_by === userId
+  const theyRequested   = match.extension_requested_by && match.extension_requested_by !== userId
   const alreadyApproved = match.extension_approved === true
-  const canRequest = !match.extension_requested_by && !match.is_extended
+  const canRequest      = !match.extension_requested_by && !match.is_extended
 
   const handleRequest = async () => {
     if (!reason) return
     setLoading(true)
     await requestExtension(match.id, userId, reason)
-    setLoading(false)
-    setShowForm(false)
-    onUpdated()
+    setLoading(false); setShowForm(false); onUpdated()
   }
 
   const handleApprove = async () => {
     setLoading(true)
     await approveExtension(match.id, userId)
-    setLoading(false)
-    onUpdated()
+    setLoading(false); onUpdated()
   }
 
   if (match.is_extended && alreadyApproved) {
     return (
-      <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl"
-        style={{ background: 'rgba(52,199,89,0.06)', border: '1px solid rgba(52,199,89,0.2)' }}>
-        <Zap size={12} className="text-[#34C759] flex-none" />
-        <span className="text-xs" style={{ color: 'rgba(52,199,89,0.8)' }}>
-          48-hour extension active · one-time used
-        </span>
+      <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl"
+        style={{ background: 'rgba(0,179,122,0.06)', border: '1.5px solid rgba(0,179,122,0.2)' }}>
+        <Zap size={14} style={{ color: '#00B37A', flexShrink: 0 }} fill="#00B37A" />
+        <span className="text-xs font-medium" style={{ color: '#00B37A' }}>48-hour extension active · one-time used</span>
       </div>
     )
   }
 
   if (iRequested && !alreadyApproved) {
     return (
-      <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl"
-        style={{ background: 'rgba(255,159,10,0.06)', border: '1px solid rgba(255,159,10,0.2)' }}>
-        <Zap size={12} style={{ color: '#FF9F0A' }} className="flex-none" />
-        <span className="text-xs" style={{ color: 'rgba(255,159,10,0.8)' }}>
-          Extension requested · waiting on their approval
-        </span>
+      <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl"
+        style={{ background: 'rgba(245,158,11,0.06)', border: '1.5px solid rgba(245,158,11,0.2)' }}>
+        <Zap size={14} style={{ color: '#F59E0B', flexShrink: 0 }} />
+        <span className="text-xs font-medium" style={{ color: '#B45309' }}>Extension requested · waiting on their approval</span>
       </div>
     )
   }
 
   if (theyRequested && !alreadyApproved) {
     return (
-      <div className="rounded-2xl p-5 space-y-4"
-        style={{ background: 'rgba(255,159,10,0.04)', border: '1px solid rgba(255,159,10,0.2)' }}>
+      <div className="rounded-2xl p-4 space-y-3"
+        style={{ background: 'rgba(245,158,11,0.06)', border: '1.5px solid rgba(245,158,11,0.2)' }}>
         <div>
           <p className="section-label m-0 mb-1">Extension Request</p>
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Reason: <span style={{ color: 'rgba(255,255,255,0.7)' }}>{match.extension_reason}</span>
+          <p className="text-sm" style={{ color: '#6B4C58' }}>
+            Reason: <span style={{ color: '#1C1018', fontWeight: 500 }}>{match.extension_reason}</span>
           </p>
         </div>
-        <button onClick={handleApprove} disabled={loading} className="btn-success flex items-center justify-center gap-2 w-full">
-          <Zap size={14} />
+        <button onClick={handleApprove} disabled={loading}
+          className="btn-success flex items-center justify-center gap-2 w-full py-3">
+          <Zap size={14} fill="white" />
           {loading ? 'Approving…' : 'Approve +48h Extension'}
         </button>
       </div>
@@ -152,40 +136,39 @@ function ExtensionPanel({ match, userId, onUpdated }) {
   return (
     <div>
       {!showForm ? (
-        <button
-          onClick={() => setShowForm(true)}
-          className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200"
-          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)',
-            color: 'rgba(255,255,255,0.3)' }}>
-          <span className="flex items-center gap-2 text-sm">
+        <button onClick={() => setShowForm(true)}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-200"
+          style={{ background: '#FFFFFF', border: '1.5px solid #F0E4DC', color: '#9B8890' }}>
+          <span className="flex items-center gap-2 text-sm font-medium">
             <Zap size={14} /> Request 48h extension
           </span>
-          <ChevronDown size={13} />
+          <ChevronDown size={14} />
         </button>
       ) : (
-        <div className="rounded-2xl p-5 space-y-4 animate-slide-up"
-          style={{ background: 'rgba(255,159,10,0.04)', border: '1px solid rgba(255,159,10,0.2)' }}>
+        <div className="rounded-2xl p-4 space-y-3 animate-slide-up"
+          style={{ background: '#FFFFFF', border: '1.5px solid #F0E4DC', boxShadow: '0 4px 16px rgba(28,16,24,0.08)' }}>
           <p className="section-label m-0">Valid reason required</p>
           <div className="space-y-2">
             {EXTENSION_REASONS.map((r) => (
               <label key={r.value}
                 className="flex items-center gap-3 cursor-pointer p-3 rounded-xl transition-all duration-150"
-                style={{ background: reason === r.value ? 'rgba(255,59,48,0.06)' : 'rgba(255,255,255,0.02)',
-                  border: `1px solid ${reason === r.value ? 'rgba(255,59,48,0.25)' : 'rgba(255,255,255,0.06)'}` }}>
-                <div className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-none transition-all"
-                  style={{ borderColor: reason === r.value ? '#FF3B30' : 'rgba(255,255,255,0.2)',
-                    background: reason === r.value ? '#FF3B30' : 'transparent' }}>
+                style={{
+                  background: reason === r.value ? 'rgba(232,51,106,0.06)' : '#FEF6F0',
+                  border: `1.5px solid ${reason === r.value ? 'rgba(232,51,106,0.25)' : '#F0E4DC'}`,
+                }}>
+                <div className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-none"
+                  style={{ borderColor: reason === r.value ? '#E8336A' : '#D4A8B5', background: reason === r.value ? '#E8336A' : 'transparent' }}>
                   {reason === r.value && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                 </div>
-                <input type="radio" className="sr-only" value={r.value} checked={reason === r.value}
-                  onChange={() => setReason(r.value)} />
-                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>{r.label}</span>
+                <input type="radio" className="sr-only" value={r.value} checked={reason === r.value} onChange={() => setReason(r.value)} />
+                <span className="text-sm" style={{ color: '#6B4C58' }}>{r.label}</span>
               </label>
             ))}
           </div>
           <div className="flex gap-2 pt-1">
             <button onClick={() => setShowForm(false)}
-              className="btn-ghost flex-none px-4 py-3 flex items-center justify-center">
+              className="flex-none px-4 py-3 rounded-2xl flex items-center justify-center transition-colors"
+              style={{ border: '1.5px solid #F0E4DC', color: '#9B8890', background: '#FFFFFF' }}>
               <X size={14} />
             </button>
             <button onClick={handleRequest} disabled={!reason || loading}
@@ -200,17 +183,15 @@ function ExtensionPanel({ match, userId, onUpdated }) {
 }
 
 export default function MatchFuse({ match, onDateSet, onExpired }) {
-  const user = useAuthStore((s) => s.user)
+  const user    = useAuthStore((s) => s.user)
   const profile = useAuthStore((s) => s.profile)
   const [localMatch, setLocalMatch] = useState(match)
   const { isExpired } = useCountdown(localMatch.expires_at)
   const [bookingDate, setBookingDate] = useState(false)
 
-  const isUser1 = localMatch.user_1 === user?.id
-  const other = isUser1 ? localMatch.profile_2 : localMatch.profile_1
-  const myPrefs = profile?.soft_prefs ?? {}
-  const theirPrefs = other?.soft_prefs ?? {}
-  const score = calcFussyScore(myPrefs, theirPrefs)
+  const isUser1    = localMatch.user_1 === user?.id
+  const other      = isUser1 ? localMatch.profile_2 : localMatch.profile_1
+  const score      = calcFussyScore(profile?.soft_prefs ?? {}, other?.soft_prefs ?? {})
 
   useEffect(() => { if (isExpired) onExpired?.() }, [isExpired])
 
@@ -224,42 +205,38 @@ export default function MatchFuse({ match, onDateSet, onExpired }) {
   return (
     <div className="space-y-3 animate-fade-in">
 
-      {/* Other person header */}
-      <div className="flex items-center gap-4 px-1 py-2">
-        <div className="w-12 h-12 rounded-full flex-none flex items-center justify-center overflow-hidden"
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          {other?.avatar_url ? (
-            <img src={other.avatar_url} alt={other.display_name} className="w-full h-full object-cover" />
-          ) : (
-            <span className="font-heading text-lg" style={{ color: 'rgba(255,255,255,0.3)' }}>
-              {other?.display_name?.[0]?.toUpperCase() ?? '?'}
-            </span>
-          )}
+      {/* Other person */}
+      <div className="flex items-center gap-3 px-1 pb-1">
+        <div className="w-14 h-14 rounded-full flex-none overflow-hidden flex items-center justify-center"
+          style={{ background: 'linear-gradient(135deg, #FFF0F5, #FEF6F0)', border: '1.5px solid #F0E4DC' }}>
+          {other?.avatar_url
+            ? <img src={other.avatar_url} alt={other.display_name} className="w-full h-full object-cover" />
+            : <span className="font-heading text-xl" style={{ color: '#D4A8B5' }}>{other?.display_name?.[0]?.toUpperCase() ?? '?'}</span>}
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="font-heading text-xl text-white truncate">{other?.display_name}</h2>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          <h2 className="font-heading text-xl truncate" style={{ color: '#1C1018' }}>{other?.display_name}</h2>
+          <p className="text-xs mt-0.5" style={{ color: '#9B8890' }}>
             {other?.attributes?.age && `${other.attributes.age}`}
             {other?.attributes?.location_city && ` · ${other.attributes.location_city}`}
           </p>
         </div>
-        <div className="tag-active text-[10px]">Active</div>
+        <div className="tag-active text-[10px] flex-none">Active</div>
       </div>
 
       <FuseTimer expiresAt={localMatch.expires_at} />
       <FussyScore score={score} />
 
-      {/* Date CTA */}
+      {/* Book date */}
       <button
         onClick={handleDateSet}
         disabled={bookingDate || isExpired}
-        className="btn-success w-full flex items-center justify-between py-4"
+        className="btn-success w-full flex items-center justify-between py-4 px-5"
       >
         <span className="flex items-center gap-2">
           <CalendarCheck size={16} />
           {bookingDate ? 'Locking in…' : 'Date Booked — Lock It In'}
         </span>
-        <span className="font-mono text-xs opacity-60">→</span>
+        <span className="font-mono text-xs opacity-70">→</span>
       </button>
 
       {!isExpired && (
