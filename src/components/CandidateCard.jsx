@@ -1,22 +1,81 @@
 import { useState, useRef, useCallback } from 'react'
-import { Heart, X, MapPin } from 'lucide-react'
+import { Heart, X, MapPin, ChevronDown, ChevronUp } from 'lucide-react'
 import { createMatch } from '../lib/supabaseClient'
+import { getAvatarGradient } from '../lib/avatarUtils'
 import useAuthStore from '../store/useAuthStore'
 
 const SWIPE_THRESHOLD = 75
 const ROTATE_FACTOR   = 0.07
 
-export default function CandidateCard({ candidate, onAction, isBack = false }) {
+// ── Lifestyle tag pills ───────────────────────────────────────────────────────
+function LifestyleTag({ children }) {
+  return (
+    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+      style={{ background: '#FEF0F4', border: '1.5px solid #F8D6E0', color: '#C0526E' }}>
+      {children}
+    </span>
+  )
+}
+
+function InterestTag({ children }) {
+  return (
+    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+      style={{ background: '#F0F4FE', border: '1.5px solid #D6DFF8', color: '#4B6AD4' }}>
+      {children}
+    </span>
+  )
+}
+
+// ── Back card (peeking behind front) ─────────────────────────────────────────
+export function BackCard({ candidate }) {
+  const { display_name, avatar_url } = candidate
+  const gradient = getAvatarGradient(display_name)
+
+  return (
+    <div className="rounded-3xl overflow-hidden pointer-events-none select-none"
+      style={{ border: '1.5px solid #F0E4DC', background: '#FFFFFF', boxShadow: '0 4px 20px rgba(28,16,24,0.06)' }}>
+      <div className="relative" style={{ aspectRatio: '3/4' }}>
+        {avatar_url
+          ? <img src={avatar_url} alt="" className="w-full h-full object-cover opacity-60" />
+          : <div className="w-full h-full opacity-60" style={{ background: gradient }} />}
+      </div>
+      {/* Spacer matching action button height */}
+      <div className="p-4" style={{ height: 72 }} />
+    </div>
+  )
+}
+
+// ── Main card ─────────────────────────────────────────────────────────────────
+export default function CandidateCard({ candidate, onAction }) {
   const user = useAuthStore((s) => s.user)
-  const [exitDir, setExitDir] = useState(null)
-  const [drag, setDrag]       = useState({ x: 0, y: 0, active: false })
+  const [exitDir, setExitDir]   = useState(null)
+  const [drag, setDrag]         = useState({ x: 0, y: 0, active: false })
+  const [expanded, setExpanded] = useState(false)
   const startRef = useRef(null)
   const cardRef  = useRef(null)
 
-  const { id, display_name, attributes, avatar_url } = candidate
+  const { id, display_name, attributes, avatar_url, soft_prefs } = candidate
   const { age, location_city, height_cm, has_kids, wants_kids, smoking, drinking } = attributes ?? {}
-  const initial = display_name?.[0]?.toUpperCase() ?? '?'
+  const interests = soft_prefs?.interests ?? []
+  const initial   = display_name?.[0]?.toUpperCase() ?? '?'
+  const gradient  = getAvatarGradient(display_name)
 
+  // Lifestyle tags to show when expanded
+  const lifestyleTags = [
+    has_kids === false && 'No kids',
+    has_kids === true  && 'Has kids',
+    wants_kids === true  && 'Wants kids',
+    wants_kids === false && 'No more kids',
+    smoking === 'never'     && 'Non-smoker',
+    smoking === 'socially'  && 'Social smoker',
+    drinking === 'never'    && 'Non-drinker',
+    drinking === 'socially' && 'Social drinker',
+    height_cm && `${height_cm} cm`,
+  ].filter(Boolean)
+
+  const hasMore = lifestyleTags.length > 0 || interests.length > 0
+
+  // ── Swipe handlers ──────────────────────────────────────────────────────────
   const handleLike = useCallback(async () => {
     setExitDir('right')
     try { await createMatch(user.id, id) } catch (_) {}
@@ -29,7 +88,6 @@ export default function CandidateCard({ candidate, onAction, isBack = false }) {
   }, [id, onAction])
 
   const onPointerDown = (e) => {
-    if (isBack) return
     if (e.target.closest('button')) return
     e.preventDefault()
     cardRef.current?.setPointerCapture(e.pointerId)
@@ -50,30 +108,15 @@ export default function CandidateCard({ candidate, onAction, isBack = false }) {
   }
 
   let tx = drag.x, ty = drag.y, rot = drag.x * ROTATE_FACTOR
-  if (exitDir === 'right') { tx = 700;  ty = -80; rot = 22 }
+  if (exitDir === 'right') { tx = 700;  ty = -80; rot =  22 }
   if (exitDir === 'left')  { tx = -700; ty = -80; rot = -22 }
 
   const likeOpacity = Math.min(Math.max(drag.x / SWIPE_THRESHOLD, 0), 1)
   const nopeOpacity = Math.min(Math.max(-drag.x / SWIPE_THRESHOLD, 0), 1)
   const isExiting   = exitDir !== null
-  const transition  = (isExiting || !drag.active) ? 'transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.42s ease' : 'none'
-
-  if (isBack) {
-    return (
-      <div className="rounded-3xl overflow-hidden pointer-events-none select-none"
-        style={{ border: '1.5px solid #F0E4DC', background: '#FFFFFF', boxShadow: '0 4px 20px rgba(28,16,24,0.06)' }}>
-        <div className="relative" style={{ aspectRatio: '3/4' }}>
-          {avatar_url
-            ? <img src={avatar_url} alt="" className="w-full h-full object-cover opacity-60" />
-            : <div className="w-full h-full" style={{ background: 'linear-gradient(160deg, #FFF0F5, #FEF6F0)' }} />}
-        </div>
-        <div className="p-4 flex gap-3 opacity-0">
-          <div className="flex-1 py-3.5 rounded-2xl" />
-          <div className="flex-[2] py-3.5 rounded-2xl" />
-        </div>
-      </div>
-    )
-  }
+  const transition  = (isExiting || !drag.active)
+    ? 'transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.42s ease'
+    : 'none'
 
   return (
     <div
@@ -107,22 +150,22 @@ export default function CandidateCard({ candidate, onAction, isBack = false }) {
         <span className="font-heading text-xl tracking-widest" style={{ color: '#E8336A' }}>NOPE</span>
       </div>
 
-      {/* Photo */}
+      {/* Photo / gradient avatar */}
       <div className="relative" style={{ aspectRatio: '3/4' }}>
         {avatar_url ? (
           <img src={avatar_url} alt={display_name} className="w-full h-full object-cover" draggable={false} />
         ) : (
-          <div className="w-full h-full flex items-center justify-center"
-            style={{ background: 'linear-gradient(160deg, #FFF0F5 0%, #FEF6F0 50%, #FFF0E8 100%)' }}>
-            <span className="font-heading select-none" style={{ fontSize: 'clamp(80px, 28vw, 120px)', color: 'rgba(232,51,106,0.12)' }}>
+          <div className="w-full h-full flex items-center justify-center" style={{ background: gradient }}>
+            <span className="font-heading select-none text-white"
+              style={{ fontSize: 'clamp(80px, 28vw, 130px)', opacity: 0.35 }}>
               {initial}
             </span>
           </div>
         )}
 
-        {/* Gradient overlay */}
+        {/* Gradient overlay — fades to white at bottom */}
         <div className="absolute inset-x-0 bottom-0 h-2/3 pointer-events-none"
-          style={{ background: 'linear-gradient(to top, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.6) 45%, transparent 100%)' }} />
+          style={{ background: 'linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.7) 40%, transparent 100%)' }} />
 
         {/* Name + location */}
         <div className="absolute bottom-0 inset-x-0 p-5 z-10">
@@ -132,10 +175,9 @@ export default function CandidateCard({ candidate, onAction, isBack = false }) {
                 {display_name}
                 {age && <span className="font-mono text-lg ml-2" style={{ color: '#9B8890' }}>{age}</span>}
               </h3>
-              {(location_city || height_cm) && (
-                <div className="flex items-center gap-1.5 flex-wrap" style={{ color: '#9B8890', fontSize: 12 }}>
-                  {location_city && <><MapPin size={11} /><span>{location_city}</span></>}
-                  {height_cm && <><span>·</span><span>{height_cm}cm</span></>}
+              {location_city && (
+                <div className="flex items-center gap-1.5" style={{ color: '#9B8890', fontSize: 12 }}>
+                  <MapPin size={11} /><span>{location_city}</span>
                 </div>
               )}
             </div>
@@ -147,20 +189,46 @@ export default function CandidateCard({ candidate, onAction, isBack = false }) {
         </div>
       </div>
 
-      {/* Tags */}
-      {(has_kids != null || wants_kids != null || smoking || drinking) && (
-        <div className="px-4 pt-3 pb-1 flex flex-wrap gap-1.5">
-          {has_kids === false && <span className="tag">No kids</span>}
-          {has_kids === true  && <span className="tag">Has kids</span>}
-          {wants_kids === true && <span className="tag">Wants kids</span>}
-          {smoking === 'never' && <span className="tag">Non-smoker</span>}
-          {drinking === 'socially' && <span className="tag">Social drinker</span>}
-          {drinking === 'never' && <span className="tag">Non-drinker</span>}
+      {/* ── Expandable detail section ─────────────────────────────────────── */}
+      {hasMore && (
+        <div>
+          {/* Expand toggle */}
+          <button
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={() => setExpanded((v) => !v)}
+            className="w-full flex items-center justify-center gap-1.5 py-2.5 transition-colors"
+            style={{ borderTop: '1.5px solid #F7EDE7', color: '#C4ADB5', fontSize: 11, fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.08em' }}>
+            {expanded ? <><ChevronUp size={13} /> LESS</> : <><ChevronDown size={13} /> MORE ABOUT {display_name?.split(' ')[0]?.toUpperCase()}</>}
+          </button>
+
+          {/* Expanded content */}
+          {expanded && (
+            <div className="px-4 pb-4 space-y-3 animate-fade-in" style={{ borderTop: '1.5px solid #F7EDE7' }}>
+
+              {lifestyleTags.length > 0 && (
+                <div className="pt-3">
+                  <p className="section-label mb-2">Lifestyle</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {lifestyleTags.map((t) => <LifestyleTag key={t}>{t}</LifestyleTag>)}
+                  </div>
+                </div>
+              )}
+
+              {interests.length > 0 && (
+                <div>
+                  <p className="section-label mb-2">Interests</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {interests.map((i) => <InterestTag key={i}>{i}</InterestTag>)}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
       {/* Action buttons */}
-      <div className="p-4 pt-3 flex gap-3">
+      <div className="p-4 pt-3 flex gap-3" style={{ borderTop: hasMore ? 'none' : '1.5px solid #F7EDE7' }}>
         <button
           onPointerDown={(e) => e.stopPropagation()}
           onClick={handlePass}
@@ -171,8 +239,8 @@ export default function CandidateCard({ candidate, onAction, isBack = false }) {
         <button
           onPointerDown={(e) => e.stopPropagation()}
           onClick={handleLike}
-          className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 font-heading text-sm tracking-wider uppercase transition-all duration-200 active:scale-[0.96]"
-          style={{ background: 'linear-gradient(135deg, #E8336A, #FF6B6B)', color: '#FFFFFF', boxShadow: '0 4px 16px rgba(232,51,106,0.35)' }}>
+          className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 font-heading text-sm tracking-wider uppercase transition-all duration-200 active:scale-[0.96] text-white"
+          style={{ background: 'linear-gradient(135deg, #E8336A, #FF6B6B)', boxShadow: '0 4px 16px rgba(232,51,106,0.35)' }}>
           <Heart size={15} fill="white" /> Like
         </button>
       </div>

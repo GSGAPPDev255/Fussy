@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { RefreshCw, SearchX, Sliders } from 'lucide-react'
 import { getCandidates } from '../lib/supabaseClient'
-import CandidateCard from '../components/CandidateCard'
+import CandidateCard, { BackCard } from '../components/CandidateCard'
 import useAuthStore from '../store/useAuthStore'
 
 export default function Browse() {
@@ -135,7 +135,7 @@ export default function Browse() {
             {nextCard && (
               <div className="absolute inset-x-0 top-0 pointer-events-none"
                 style={{ zIndex: 1, transform: 'scale(0.94) translateY(12px)', transformOrigin: 'bottom center' }}>
-                <CandidateCard key={`back-${nextCard.id}`} candidate={nextCard} isBack />
+                <BackCard key={`back-${nextCard.id}`} candidate={nextCard} />
               </div>
             )}
             <div style={{ position: 'relative', zIndex: 2 }}>

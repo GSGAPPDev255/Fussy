@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Zap, Flame } from 'lucide-react'
+import { getAvatarGradient } from '../lib/avatarUtils'
 import { useMatches, calcFussyScore } from '../hooks/useMatches'
 import { useCountdown } from '../hooks/useCountdown'
 import useAuthStore from '../store/useAuthStore'
@@ -27,12 +28,14 @@ function MatchRow({ match, userId, myPrefs }) {
 
       {/* Avatar */}
       <div className="w-12 h-12 rounded-full flex-none flex items-center justify-center overflow-hidden relative"
-        style={{ background: 'linear-gradient(135deg, #FFF0F5, #FEF6F0)', border: '1.5px solid #F0E4DC' }}>
+        style={{ border: '1.5px solid #F0E4DC' }}>
         {other?.avatar_url
           ? <img src={other.avatar_url} alt={other.display_name} className="w-full h-full object-cover" />
-          : <span className="font-heading text-lg" style={{ color: '#D4A8B5' }}>
-              {other?.display_name?.[0]?.toUpperCase() ?? '?'}
-            </span>}
+          : <div className="w-full h-full flex items-center justify-center" style={{ background: getAvatarGradient(other?.display_name) }}>
+              <span className="font-heading text-lg text-white" style={{ opacity: 0.7 }}>
+                {other?.display_name?.[0]?.toUpperCase() ?? '?'}
+              </span>
+            </div>}
         {isBooked && (
           <div className="absolute inset-0 rounded-full flex items-center justify-center"
             style={{ background: 'rgba(0,179,122,0.85)' }}>
