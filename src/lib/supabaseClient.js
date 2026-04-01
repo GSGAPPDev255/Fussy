@@ -44,8 +44,16 @@ export const upsertProfile = (profile) =>
 // Matching helpers
 // ---------------------------------------------------------------------------
 
-export const getCandidates = (userId) =>
-  supabase.rpc('get_fussy_candidates', { requesting_user_id: userId })
+/**
+ * Fetch browse candidates.
+ * @param {string} userId
+ * @param {boolean} lessFussy  When true, skips the reverse-filter check so more people appear.
+ */
+export const getCandidates = (userId, lessFussy = false) =>
+  supabase.rpc('get_fussy_candidates', {
+    requesting_user_id: userId,
+    p_less_fussy: lessFussy,
+  })
 
 export const createMatch = async (userId, candidateId) => {
   // Enforce ordered constraint: smaller UUID goes in user_1
@@ -92,6 +100,36 @@ export const setDateBooked = (matchId) =>
     .from('matches')
     .update({ status: 'date_set', date_set_at: new Date().toISOString() })
     .eq('id', matchId)
+
+// ---------------------------------------------------------------------------
+// Photo / Avatar helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Upload a profile photo to Supabase Storage.
+ * Bucket 'avatars' must exist and be public.
+ */
+export const uploadAvatar = async (userId, file) => {
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg'
+  const path = `${userId}/avatar.${ext}`
+  const { data, error } = await supabase.storage
+    .from('avatars')
+    .upload(path, file, { upsert: true, contentType: file.type })
+  return { data, error, path }
+}
+
+/** Get a public URL for an avatar at the given storage path. */
+export const getAvatarUrl = (path) =>
+  supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl
+
+/**
+ * Call the verify-photo Edge Function.
+ * Returns { valid: boolean, reason: string }
+ */
+export const verifyPhoto = (storagePath) =>
+  supabase.functions.invoke('verify-photo', {
+    body: { storage_path: storagePath },
+  })
 
 // ---------------------------------------------------------------------------
 // Realtime subscriptions

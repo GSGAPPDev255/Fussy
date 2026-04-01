@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Google Fonts ──────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
-
 @layer base {
   * {
     -webkit-tap-highlight-color: transparent;
@@ -14,8 +11,8 @@
   html, body, #root {
     height: 100%;
     min-height: 100dvh;
-    background-color: #080808;
-    color: #F0F0F0;
+    background-color: #0D0D0F;
+    color: #EDEDED;
     font-family: 'DM Sans', sans-serif;
     overscroll-behavior: none;
   }
@@ -23,8 +20,6 @@
   body {
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
-    /* Subtle noise overlay */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
   }
 
   h1, h2, h3, .font-heading {
@@ -35,161 +30,97 @@
 
 @layer components {
 
-  /* ─── Buttons ─────────────────────────────────────────────── */
+  /* ─── Buttons ─────────────────────────────────────────────────── */
   .btn-primary {
     @apply relative w-full py-4 px-6 text-white font-heading text-sm tracking-widest uppercase
-           rounded-xl overflow-hidden transition-all duration-200 active:scale-[0.98]
+           rounded-2xl overflow-hidden transition-all duration-150 active:scale-[0.97]
            disabled:opacity-30 disabled:cursor-not-allowed;
-    background: linear-gradient(135deg, #FF3B30, #CC1F14);
-    box-shadow: 0 0 0 1px rgba(255,59,48,0.3), 0 8px 32px rgba(255,59,48,0.2);
+    background: #FF3B30;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset, 0 8px 20px rgba(255,59,48,0.25);
   }
-  .btn-primary::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
-    pointer-events: none;
-  }
+  .btn-primary:hover:not(:disabled) { background: #FF2418; }
 
   .btn-ghost {
-    @apply w-full py-4 px-6 text-[#888] font-body text-sm rounded-xl
-           transition-all duration-200 active:scale-[0.98] disabled:opacity-30;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.03);
+    @apply w-full py-4 px-6 font-body text-sm rounded-2xl
+           transition-all duration-150 active:scale-[0.97] disabled:opacity-30;
+    color: rgba(255,255,255,0.45);
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
   }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.18); color: rgba(255,255,255,0.65); }
 
   .btn-success {
     @apply relative w-full py-4 px-6 font-heading text-sm tracking-widest uppercase
-           rounded-xl overflow-hidden transition-all duration-200 active:scale-[0.98]
+           rounded-2xl overflow-hidden transition-all duration-150 active:scale-[0.97]
            disabled:opacity-30 disabled:cursor-not-allowed;
-    color: #080808;
-    background: linear-gradient(135deg, #34C759, #28A046);
-    box-shadow: 0 0 0 1px rgba(52,199,89,0.3), 0 8px 32px rgba(52,199,89,0.15);
+    color: #0D0D0F;
+    background: #34C759;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.2) inset, 0 8px 20px rgba(52,199,89,0.2);
   }
 
-  /* ─── Cards ───────────────────────────────────────────────── */
+  /* ─── Cards ───────────────────────────────────────────────────── */
   .card {
     @apply rounded-2xl p-4;
     background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    backdrop-filter: blur(12px);
-  }
-
-  .card-elevated {
-    @apply rounded-2xl p-5;
-    background: linear-gradient(145deg, rgba(28,28,28,0.9), rgba(18,18,18,0.9));
-    border: 1px solid rgba(255,255,255,0.09);
-    box-shadow: 0 24px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-  }
-
-  /* ─── Inputs ──────────────────────────────────────────────── */
-  .input-field {
-    @apply w-full rounded-xl px-4 py-3.5 text-[#F0F0F0] text-sm
-           focus:outline-none transition-all duration-200;
-    background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+
+  /* ─── Inputs ──────────────────────────────────────────────────── */
+  .input-field {
+    @apply w-full rounded-xl px-4 py-3.5 text-[#EDEDED] text-sm
+           transition-all duration-150;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    outline: none;
     font-family: 'DM Sans', sans-serif;
   }
   .input-field:focus {
-    border-color: rgba(255,59,48,0.5);
-    background: rgba(255,59,48,0.04);
-    box-shadow: 0 0 0 3px rgba(255,59,48,0.08);
+    border-color: rgba(255,59,48,0.6);
+    background: rgba(255,255,255,0.06);
+    box-shadow: 0 0 0 3px rgba(255,59,48,0.1);
   }
   .input-field::placeholder { color: rgba(255,255,255,0.2); }
 
-  /* ─── Tags ────────────────────────────────────────────────── */
+  /* ─── Tags ────────────────────────────────────────────────────── */
   .tag {
     @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.5);
-    font-family: 'DM Sans', sans-serif;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.09);
+    color: rgba(255,255,255,0.45);
   }
 
   .tag-active {
     @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs;
-    background: rgba(255,59,48,0.12);
-    border: 1px solid rgba(255,59,48,0.25);
-    color: #FF3B30;
-    font-family: 'DM Sans', sans-serif;
+    background: rgba(255,59,48,0.1);
+    border: 1px solid rgba(255,59,48,0.28);
+    color: #FF6B63;
   }
 
   .section-label {
-    @apply text-[10px] font-mono uppercase tracking-[0.15em] mb-2;
+    @apply block text-[10px] font-mono uppercase tracking-[0.16em] mb-2;
     color: rgba(255,255,255,0.3);
   }
-
-  /* ─── Glow effects ────────────────────────────────────────── */
-  .glow-red {
-    box-shadow: 0 0 40px rgba(255,59,48,0.15), 0 0 80px rgba(255,59,48,0.05);
-  }
-
-  .text-glow-red {
-    text-shadow: 0 0 30px rgba(255,59,48,0.4);
-  }
-
-  .border-glow-red {
-    border-color: rgba(255,59,48,0.4) !important;
-    box-shadow: 0 0 12px rgba(255,59,48,0.1);
-  }
-
-  /* ─── Gradient border ─────────────────────────────────────── */
-  .gradient-border {
-    position: relative;
-    border-radius: 1rem;
-  }
-  .gradient-border::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(255,59,48,0.4), rgba(255,255,255,0.05), rgba(255,59,48,0.1));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  /* ─── Divider ─────────────────────────────────────────────── */
-  .divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
-  }
 }
 
-/* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
+/* ─── Scrollbar ────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 2px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,59,48,0.3); border-radius: 1px; }
-
-/* ─── Selection ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 1px; }
 ::selection { background: rgba(255,59,48,0.2); }
 
-/* ─── Animations ────────────────────────────────────────────────────────────── */
+/* ─── Animations ───────────────────────────────────────────────────── */
+@keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slide-up { from { transform: translateY(16px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+@keyframes scale-in { from { transform: scale(0.95); opacity: 0 } to { transform: scale(1); opacity: 1 } }
 @keyframes pulse-red {
-  0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(255,59,48,0.3); }
-  50% { opacity: 0.6; box-shadow: 0 0 40px rgba(255,59,48,0.6); }
+  0%, 100% { color: #FF3B30 }
+  50% { color: #FF6B63 }
 }
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes slide-up {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-@keyframes slide-in-right {
-  from { transform: translateX(24px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-@keyframes glow-pulse {
-  0%, 100% { text-shadow: 0 0 20px rgba(255,59,48,0.3); }
-  50% { text-shadow: 0 0 60px rgba(255,59,48,0.7), 0 0 100px rgba(255,59,48,0.2); }
-}
+@keyframes spin { to { transform: rotate(360deg) } }
 
-.animate-pulse-red { animation: pulse-red 1.8s ease-in-out infinite; }
-.animate-fade-in { animation: fade-in 0.4s ease-out forwards; }
-.animate-slide-up { animation: slide-up 0.4s ease-out forwards; }
-.animate-slide-in-right { animation: slide-in-right 0.35s ease-out forwards; }
-.animate-glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
+.animate-fade-in { animation: fade-in 0.3s ease-out forwards }
+.animate-slide-up { animation: slide-up 0.35s ease-out forwards }
+.animate-scale-in { animation: scale-in 0.3s cubic-bezier(0.175,0.885,0.32,1.1) forwards }
+.animate-pulse-red { animation: pulse-red 1.5s ease-in-out infinite }
+.animate-spin { animation: spin 0.8s linear infinite }
