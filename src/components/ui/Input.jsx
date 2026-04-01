@@ -2,15 +2,13 @@ export function Input({ label, error, className = '', ...props }) {
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-xs font-mono uppercase tracking-widest text-subdued mb-1.5">
-          {label}
-        </label>
+        <label className="section-label">{label}</label>
       )}
       <input
-        className={`w-full bg-surface border ${error ? 'border-urgency' : 'border-border'} rounded-lg px-4 py-3 text-text text-sm placeholder-subdued focus:outline-none focus:border-urgency transition-colors ${className}`}
+        className={`input-field ${error ? 'border-[rgba(255,59,48,0.5)] bg-[rgba(255,59,48,0.04)]' : ''} ${className}`}
         {...props}
       />
-      {error && <p className="mt-1 text-xs text-urgency">{error}</p>}
+      {error && <p className="mt-1.5 text-xs" style={{ color: '#FF3B30' }}>{error}</p>}
     </div>
   )
 }
@@ -18,18 +16,16 @@ export function Input({ label, error, className = '', ...props }) {
 export function Select({ label, error, children, className = '', ...props }) {
   return (
     <div className="w-full">
-      {label && (
-        <label className="block text-xs font-mono uppercase tracking-widest text-subdued mb-1.5">
-          {label}
-        </label>
-      )}
+      {label && <label className="section-label">{label}</label>}
       <select
-        className={`w-full bg-surface border ${error ? 'border-urgency' : 'border-border'} rounded-lg px-4 py-3 text-text text-sm focus:outline-none focus:border-urgency transition-colors appearance-none ${className}`}
+        className={`input-field appearance-none cursor-pointer ${className}`}
+        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center' }}
         {...props}
       >
         {children}
       </select>
-      {error && <p className="mt-1 text-xs text-urgency">{error}</p>}
+      {error && <p className="mt-1.5 text-xs" style={{ color: '#FF3B30' }}>{error}</p>}
     </div>
   )
 }
@@ -41,26 +37,31 @@ export function MultiToggle({ label, options, value = [], onChange }) {
 
   return (
     <div className="w-full">
-      {label && (
-        <label className="block text-xs font-mono uppercase tracking-widest text-subdued mb-2">
-          {label}
-        </label>
-      )}
+      {label && <label className="section-label">{label}</label>}
       <div className="flex flex-wrap gap-2">
-        {options.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => toggle(opt.value)}
-            className={`px-3 py-1.5 rounded-full text-xs border transition-all ${
-              value.includes(opt.value)
-                ? 'border-urgency bg-urgency/15 text-urgency'
-                : 'border-border text-subdued hover:border-muted'
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
+        {options.map((opt) => {
+          const active = value.includes(opt.value)
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => toggle(opt.value)}
+              className="px-3.5 py-2 rounded-xl text-xs transition-all duration-200 active:scale-95 font-medium"
+              style={active ? {
+                background: 'rgba(255,59,48,0.12)',
+                border: '1px solid rgba(255,59,48,0.35)',
+                color: '#FF3B30',
+                boxShadow: '0 0 12px rgba(255,59,48,0.08)'
+              } : {
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: 'rgba(255,255,255,0.4)'
+              }}
+            >
+              {opt.label}
+            </button>
+          )
+        })}
       </div>
     </div>
   )
@@ -69,11 +70,7 @@ export function MultiToggle({ label, options, value = [], onChange }) {
 export function RangeRow({ label, minName, maxName, minVal, maxVal, onMinChange, onMaxChange, min = 18, max = 80 }) {
   return (
     <div className="w-full">
-      {label && (
-        <label className="block text-xs font-mono uppercase tracking-widest text-subdued mb-2">
-          {label}
-        </label>
-      )}
+      {label && <label className="section-label">{label}</label>}
       <div className="flex items-center gap-3">
         <input
           type="number"
@@ -82,10 +79,10 @@ export function RangeRow({ label, minName, maxName, minVal, maxVal, onMinChange,
           onChange={onMinChange}
           min={min}
           max={max}
-          className="w-20 bg-surface border border-border rounded-lg px-3 py-2.5 text-text text-sm text-center focus:outline-none focus:border-urgency transition-colors"
+          className="w-20 input-field text-center"
           placeholder={String(min)}
         />
-        <span className="text-subdued text-xs">to</span>
+        <span className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.2)' }}>to</span>
         <input
           type="number"
           name={maxName}
@@ -93,7 +90,7 @@ export function RangeRow({ label, minName, maxName, minVal, maxVal, onMinChange,
           onChange={onMaxChange}
           min={min}
           max={max}
-          className="w-20 bg-surface border border-border rounded-lg px-3 py-2.5 text-text text-sm text-center focus:outline-none focus:border-urgency transition-colors"
+          className="w-20 input-field text-center"
           placeholder={String(max)}
         />
       </div>

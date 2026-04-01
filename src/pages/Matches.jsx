@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Timer, Zap } from 'lucide-react'
+import { Zap } from 'lucide-react'
 import { useMatches, calcFussyScore } from '../hooks/useMatches'
 import { useCountdown } from '../hooks/useCountdown'
 import useAuthStore from '../store/useAuthStore'
@@ -10,38 +10,50 @@ function MatchRow({ match, userId, myPrefs }) {
   const other = isUser1 ? match.profile_2 : match.profile_1
   const { display, isUrgent, isCritical, isExpired } = useCountdown(match.expires_at)
   const score = calcFussyScore(myPrefs, other?.soft_prefs ?? {})
+  const isBooked = match.status === 'date_set'
+
+  const timerColor = isExpired ? 'rgba(255,255,255,0.2)' : isCritical ? '#FF3B30' : isUrgent ? '#FF9F0A' : 'rgba(255,255,255,0.4)'
 
   return (
     <button
       onClick={() => navigate(`/match/${match.id}`)}
-      className="w-full flex items-center gap-3 px-4 py-3.5 border border-border rounded-xl bg-surface transition-all active:scale-[0.98] hover:border-muted text-left"
-    >
+      className="w-full flex items-center gap-3.5 px-4 py-4 rounded-2xl transition-all duration-200 active:scale-[0.98] text-left"
+      style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${isCritical ? 'rgba(255,59,48,0.2)' : 'rgba(255,255,255,0.06)'}` }}>
+
       {/* Avatar */}
-      <div className="w-11 h-11 rounded-full bg-muted flex-none flex items-center justify-center overflow-hidden">
+      <div className="w-11 h-11 rounded-full flex-none flex items-center justify-center overflow-hidden relative"
+        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
         {other?.avatar_url ? (
           <img src={other.avatar_url} alt={other.display_name} className="w-full h-full object-cover" />
         ) : (
-          <span className="font-heading text-base text-subdued">
+          <span className="font-heading text-base" style={{ color: 'rgba(255,255,255,0.25)' }}>
             {other?.display_name?.[0]?.toUpperCase() ?? '?'}
           </span>
+        )}
+        {isBooked && (
+          <div className="absolute inset-0 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(52,199,89,0.7)' }}>
+            <Zap size={12} className="text-white" />
+          </div>
         )}
       </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="font-heading text-sm text-text truncate">{other?.display_name}</p>
-        <p className="text-xs text-subdued truncate">
-          {other?.attributes?.age} · {other?.attributes?.location_city}
+        <p className="font-heading text-sm text-white truncate">{other?.display_name}</p>
+        <p className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          {other?.attributes?.age}{other?.attributes?.location_city ? ` · ${other.attributes.location_city}` : ''}
         </p>
       </div>
 
       {/* Timer + score */}
       <div className="flex-none text-right">
-        <p className={`font-mono text-xs tabular-nums ${isCritical ? 'text-urgency animate-pulse-red' : isUrgent ? 'text-warn' : 'text-subdued'}`}>
-          {isExpired ? 'EXPIRED' : display}
+        <p className={`font-mono text-xs tabular-nums ${isCritical ? 'animate-pulse-red' : ''}`}
+          style={{ color: timerColor }}>
+          {isExpired ? 'EXPIRED' : isBooked ? 'BOOKED' : display}
         </p>
-        <p className="text-xs text-subdued mt-0.5">
-          {score}% <span className="opacity-50">match</span>
+        <p className="text-xs mt-0.5 font-mono" style={{ color: 'rgba(255,255,255,0.2)' }}>
+          {score}%
         </p>
       </div>
     </button>
@@ -57,29 +69,38 @@ export default function Matches() {
   const booked = matches.filter((m) => m.status === 'date_set')
 
   return (
-    <div className="flex flex-col flex-1 px-4 pt-2 pb-4">
-      <h1 className="font-heading text-xl mb-4">Matches</h1>
+    <div className="flex flex-col flex-1 px-4 pt-4 pb-6">
+      <div className="flex items-baseline justify-between mb-6">
+        <h1 className="font-heading text-2xl text-white">Matches</h1>
+        {active.length > 0 && (
+          <span className="font-mono text-xs px-2.5 py-1 rounded-full"
+            style={{ background: 'rgba(255,59,48,0.12)', border: '1px solid rgba(255,59,48,0.25)', color: '#FF3B30' }}>
+            {active.length} active
+          </span>
+        )}
+      </div>
 
       {loading && (
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-urgency/30 border-t-urgency rounded-full animate-spin" />
+          <div className="w-5 h-5 rounded-full border-2 border-t-[#FF3B30] animate-spin"
+            style={{ borderColor: 'rgba(255,59,48,0.2)', borderTopColor: '#FF3B30' }} />
         </div>
       )}
 
       {!loading && matches.length === 0 && (
         <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-          <Zap size={32} className="text-subdued/30 mb-4" />
-          <p className="font-heading text-lg mb-2">No active matches.</p>
-          <p className="text-sm text-subdued">Browse candidates to light the fuse.</p>
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+            style={{ background: 'rgba(255,59,48,0.06)', border: '1px solid rgba(255,59,48,0.15)' }}>
+            <Zap size={22} style={{ color: 'rgba(255,59,48,0.4)' }} />
+          </div>
+          <p className="font-heading text-lg text-white mb-2">No active matches</p>
+          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>Browse candidates to light the first fuse.</p>
         </div>
       )}
 
       {!loading && active.length > 0 && (
         <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <Timer size={13} className="text-urgency" />
-            <span className="section-label m-0">Active fuses ({active.length})</span>
-          </div>
+          <p className="section-label mb-3">Active fuses</p>
           <div className="space-y-2">
             {active.map((m) => (
               <MatchRow key={m.id} match={m} userId={user?.id} myPrefs={profile?.soft_prefs ?? {}} />
@@ -90,10 +111,7 @@ export default function Matches() {
 
       {!loading && booked.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Zap size={13} className="text-success" />
-            <span className="section-label m-0">Date booked ({booked.length})</span>
-          </div>
+          <p className="section-label mb-3">Date booked</p>
           <div className="space-y-2">
             {booked.map((m) => (
               <MatchRow key={m.id} match={m} userId={user?.id} myPrefs={profile?.soft_prefs ?? {}} />

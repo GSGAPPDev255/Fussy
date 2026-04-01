@@ -16,7 +16,7 @@ export default {
       },
       fontFamily: {
         heading: ['"Archivo Black"', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        body: ['"DM Sans"', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       animation: {

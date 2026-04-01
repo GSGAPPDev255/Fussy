@@ -11,7 +11,7 @@ import BottomNav from './components/BottomNav'
 
 function ProtectedLayout({ children }) {
   return (
-    <div className="flex flex-col min-h-dvh max-w-md mx-auto">
+    <div className="flex flex-col min-h-dvh max-w-md mx-auto" style={{ background: '#080808' }}>
       <div className="flex-1 flex flex-col overflow-y-auto">
         {children}
       </div>
